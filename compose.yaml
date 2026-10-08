@@ -1,3 +1,4 @@
+
 services:
   db:
     image: mysql:8.0
@@ -7,6 +8,8 @@ services:
       MYSQL_DATABASE: nextech_shop
       MYSQL_USER: nextech
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "8080:8080"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./sql/nextech_shop.sql:/docker-entrypoint-initdb.d/01-nextech-shop.sql:ro
@@ -15,29 +18,30 @@ services:
       interval: 5s
       timeout: 5s
       retries: 25
-    networks: [appnet]
+    networks:
+      - appnet
 
   web:
     build: .
     restart: unless-stopped
+    network_mode: "service:db"
     environment:
-      DB_URL: jdbc:mysql://db:3306/nextech_shop?useUnicode=true&characterEncoding=UTF-8
+      DB_URL: "jdbc:mysql://127.0.0.1:3306/nextech_shop?useUnicode=true&characterEncoding=UTF-8"
       DB_USER: nextech
       DB_PASSWORD: ${MYSQL_PASSWORD}
       APP_ADMIN_USERNAME: ${APP_ADMIN_USERNAME}
       APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD}
       SHOP_UPLOAD_DIR: /data/uploads
-    ports:
-      - "8080:8080"
     volumes:
       - upload_data:/data/uploads
     depends_on:
       db:
         condition: service_healthy
-    networks: [appnet]
 
 volumes:
   mysql_data:
   upload_data:
+
 networks:
   appnet:
+    driver: bridge
