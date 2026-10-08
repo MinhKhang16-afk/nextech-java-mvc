@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="500" viewBox="0 0 660 500" role="img" aria-label="Ảnh minh họa Laptop Stand">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4f4fa"/><stop offset="1" stop-color="#f9fbff"/></linearGradient><linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8c99b6"/><stop offset="1" stop-color="#1b315b"/></linearGradient></defs>
+<rect width="660" height="500" fill="url(#bg)"/>
+<circle cx="555" cy="75" r="136" fill="#8c99b6" opacity=".11"/><circle cx="95" cy="435" r="175" fill="#8c99b6" opacity=".08"/>
+<circle cx="108" cy="91" r="5" fill="#8c99b6" opacity=".45"/><path d="M510 404h50m-25-25v50" stroke="#8c99b6" stroke-width="3" opacity=".3"/>
+<ellipse cx="330" cy="414" rx="140" ry="21" fill="#1b365a" opacity=".09"/><g><path d="M228 342 L335 156 L448 342" fill="none" stroke="#9da9bf" stroke-width="23" stroke-linecap="round"/><path d="M190 354 H480" stroke="#7285a4" stroke-width="24" stroke-linecap="round"/><path d="M210 168 H460" stroke="#b9c6da" stroke-width="18" stroke-linecap="round"/><rect x="170" y="140" width="315" height="28" rx="7" fill="#e6eaf3" transform="rotate(-12 327 154)"/><rect x="220" y="300" width="225" height="12" rx="5" fill="#8c99b6" opacity=".65"/></g>
+<rect x="22" y="22" width="105" height="31" rx="15" fill="#fff" opacity=".85"/><text x="74" y="43" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="#546782">NEXTECH</text>
+<text x="330" y="468" text-anchor="middle" font-size="20" font-weight="bold" font-family="Arial,sans-serif" fill="#677993">Laptop Stand</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="500" viewBox="0 0 660 500" role="img" aria-label="Ảnh minh họa 35W Dual">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efedff"/><stop offset="1" stop-color="#f9fbff"/></linearGradient><linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8b75c8"/><stop offset="1" stop-color="#1b315b"/></linearGradient></defs>
+<rect width="660" height="500" fill="url(#bg)"/>
+<circle cx="555" cy="75" r="136" fill="#8b75c8" opacity=".11"/><circle cx="95" cy="435" r="175" fill="#8b75c8" opacity=".08"/>
+<circle cx="108" cy="91" r="5" fill="#8b75c8" opacity=".45"/><path d="M510 404h50m-25-25v50" stroke="#8b75c8" stroke-width="3" opacity=".3"/>
+<ellipse cx="330" cy="414" rx="140" ry="21" fill="#1b365a" opacity=".09"/><g transform="rotate(-10 330 240)"><rect x="250" y="125" width="178" height="244" rx="41" fill="#fff" stroke="#d7e0ed" stroke-width="6"/><rect x="287" y="91" width="22" height="52" rx="6" fill="#bcc8d8"/><rect x="374" y="91" width="22" height="52" rx="6" fill="#bcc8d8"/><rect x="287" y="283" width="100" height="15" rx="6" fill="#18344f"/><rect x="302" y="311" width="70" height="12" rx="5" fill="#7a92aa"/><circle cx="339" cy="216" r="48" fill="#8b75c8" opacity=".23"/><path d="M342 179 L322 219 H342 L332 253 L358 209 H338Z" fill="#8b75c8"/></g>
+<rect x="22" y="22" width="105" height="31" rx="15" fill="#fff" opacity=".85"/><text x="74" y="43" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="#546782">NEXTECH</text>
+<text x="330" y="468" text-anchor="middle" font-size="20" font-weight="bold" font-family="Arial,sans-serif" fill="#677993">35W Dual</text>
+</svg>

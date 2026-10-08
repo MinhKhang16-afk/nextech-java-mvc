@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' | NEXTECH'">NexTech</title>
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+</head>
+<body>
+<header th:fragment="header">
+  <div class="topbar">NEXTECH DEMO · Điện thoại &amp; phụ kiện · Đặt hàng COD</div>
+  <div class="container nav">
+    <a class="logo" th:href="@{/}"><span class="logo-symbol">N</span> NEX<span>TECH</span><small>TECH STORE</small></a>
+    <nav class="links"><a th:href="@{/}">Trang chủ</a><a th:href="@{/san-pham}">Sản phẩm</a><a th:href="@{/san-pham(danh_muc=1)}">Điện thoại</a><a th:href="@{/san-pham(danh_muc=2)}">Laptop</a><a th:href="@{/quan-tri}">Quản trị</a></nav>
+    <a class="cartpill" th:href="@{/gio-hang}">🛒 Giỏ hàng <b th:text="${cartCount}">0</b></a>
+  </div>
+</header>
+<div th:fragment="alerts" class="container alerts">
+  <div th:if="${message}" class="alert good" th:text="${message}">Thành công</div>
+  <div th:if="${error}" class="alert bad" th:text="${error}">Có lỗi</div>
+</div>
+<article th:fragment="card(p)" class="product-card">
+  <a class="product-pic" th:href="@{/san-pham/{id}(id=${p.id()})}"><img th:src="${'/' + p.image()}" th:alt="${p.name()}" loading="lazy"><span th:if="${p.featured()}" class="featured-tag">Nổi bật</span></a>
+  <div class="product-text"><p class="category-label" th:text="${p.categoryName()}">Danh mục</p>
+    <a class="product-name" th:href="@{/san-pham/{id}(id=${p.id()})}" th:text="${p.name()}">Tên sản phẩm</a>
+    <p class="description" th:text="${p.description()}">Mô tả</p>
+    <div class="product-bottom"><strong class="price" th:text="${#numbers.formatInteger(p.price(),3,'POINT') + '₫'}">0₫</strong><small th:text="${p.stock() > 0 ? 'Còn ' + p.stock() + ' sản phẩm' : 'Hết hàng'}">Tồn kho</small></div>
+    <form th:action="@{/gio-hang/them}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><input type="hidden" name="id" th:value="${p.id()}"><button type="submit" class="btn btn-dark block" th:disabled="${p.stock() == 0}" th:text="${p.stock() > 0 ? 'Thêm vào giỏ hàng' : 'Tạm hết hàng'}">Thêm vào giỏ</button></form>
+  </div>
+</article>
+<footer th:fragment="footer" class="footer"><div class="container footer-flex"><div><a th:href="@{/}" class="footer-logo">NEX<span>TECH</span></a><p>Đồ án Java MVC · Spring Boot · MySQL</p></div><div><b>Khám phá</b><p><a th:href="@{/san-pham}">Tất cả sản phẩm</a></p><p><a th:href="@{/gio-hang}">Giỏ hàng</a></p></div><div><b>Lưu ý demo</b><p>Giá, tên và hình minh họa là dữ liệu học tập.</p><p>Không thực hiện thanh toán thật.</p></div></div></footer>
+</body></html>

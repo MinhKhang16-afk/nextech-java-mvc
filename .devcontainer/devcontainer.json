@@ -1,0 +1,7 @@
+{
+  "name": "NexTech Java Spring MVC + MySQL",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "forwardPorts": [8080],
+  "portsAttributes": {"8080": {"label": "NexTech Java demo", "onAutoForward": "openBrowser"}},
+  "postCreateCommand": "test -f .env || cp .env.example .env"
+}

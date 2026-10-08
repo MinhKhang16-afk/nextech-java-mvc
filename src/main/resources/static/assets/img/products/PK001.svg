@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="500" viewBox="0 0 660 500" role="img" aria-label="Ảnh minh họa Wave Buds">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5edff"/><stop offset="1" stop-color="#f9fbff"/></linearGradient><linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9770c4"/><stop offset="1" stop-color="#1b315b"/></linearGradient></defs>
+<rect width="660" height="500" fill="url(#bg)"/>
+<circle cx="555" cy="75" r="136" fill="#9770c4" opacity=".11"/><circle cx="95" cy="435" r="175" fill="#9770c4" opacity=".08"/>
+<circle cx="108" cy="91" r="5" fill="#9770c4" opacity=".45"/><path d="M510 404h50m-25-25v50" stroke="#9770c4" stroke-width="3" opacity=".3"/>
+<ellipse cx="330" cy="414" rx="140" ry="21" fill="#1b365a" opacity=".09"/><g><rect x="245" y="214" width="177" height="158" rx="54" fill="#f9fbff" stroke="#c2cbde" stroke-width="5"/><rect x="255" y="223" width="157" height="130" rx="45" fill="#edf1fa"/><path d="M247 272 Q330 297 419 272" stroke="#cad6e8" stroke-width="5" fill="none"/><circle cx="335" cy="341" r="5" fill="#9770c4"/><g transform="rotate(-15 275 145)"><rect x="258" y="117" width="35" height="124" rx="19" fill="#fff" stroke="#becadf" stroke-width="4"/><circle cx="275" cy="133" r="20" fill="#dee4f1"/></g><g transform="rotate(14 396 153)"><rect x="380" y="116" width="35" height="122" rx="19" fill="#fff" stroke="#becadf" stroke-width="4"/><circle cx="397" cy="131" r="21" fill="#dee4f1"/></g></g>
+<rect x="22" y="22" width="105" height="31" rx="15" fill="#fff" opacity=".85"/><text x="74" y="43" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="#546782">NEXTECH</text>
+<text x="330" y="468" text-anchor="middle" font-size="20" font-weight="bold" font-family="Arial,sans-serif" fill="#677993">Wave Buds</text>
+</svg>

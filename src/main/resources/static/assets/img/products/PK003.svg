@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="500" viewBox="0 0 660 500" role="img" aria-label="Ảnh minh họa Power 10000">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9faef"/><stop offset="1" stop-color="#f9fbff"/></linearGradient><linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#42a987"/><stop offset="1" stop-color="#1b315b"/></linearGradient></defs>
+<rect width="660" height="500" fill="url(#bg)"/>
+<circle cx="555" cy="75" r="136" fill="#42a987" opacity=".11"/><circle cx="95" cy="435" r="175" fill="#42a987" opacity=".08"/>
+<circle cx="108" cy="91" r="5" fill="#42a987" opacity=".45"/><path d="M510 404h50m-25-25v50" stroke="#42a987" stroke-width="3" opacity=".3"/>
+<ellipse cx="330" cy="414" rx="140" ry="21" fill="#1b365a" opacity=".09"/><g transform="rotate(-9 332 245)"><rect x="235" y="94" width="188" height="282" rx="35" fill="#293d59"/><rect x="246" y="106" width="166" height="258" rx="28" fill="url(#screen)"/><path d="M324 190 L300 258 H334 L318 303 L373 227 H342 L358 190" fill="#fff" opacity=".9"/><rect x="291" y="91" width="27" height="10" rx="3" fill="#bbc8dd"/><rect x="339" y="91" width="27" height="10" rx="3" fill="#bbc8dd"/></g>
+<rect x="22" y="22" width="105" height="31" rx="15" fill="#fff" opacity=".85"/><text x="74" y="43" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="#546782">NEXTECH</text>
+<text x="330" y="468" text-anchor="middle" font-size="20" font-weight="bold" font-family="Arial,sans-serif" fill="#677993">Power 10000</text>
+</svg>

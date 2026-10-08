@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="500" viewBox="0 0 660 500" role="img" aria-label="Ảnh minh họa Pocket SSD">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eaf7f7"/><stop offset="1" stop-color="#f9fbff"/></linearGradient><linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#46a0a3"/><stop offset="1" stop-color="#1b315b"/></linearGradient></defs>
+<rect width="660" height="500" fill="url(#bg)"/>
+<circle cx="555" cy="75" r="136" fill="#46a0a3" opacity=".11"/><circle cx="95" cy="435" r="175" fill="#46a0a3" opacity=".08"/>
+<circle cx="108" cy="91" r="5" fill="#46a0a3" opacity=".45"/><path d="M510 404h50m-25-25v50" stroke="#46a0a3" stroke-width="3" opacity=".3"/>
+<ellipse cx="330" cy="414" rx="140" ry="21" fill="#1b365a" opacity=".09"/><g transform="rotate(-9 330 245)"><rect x="208" y="125" width="245" height="244" rx="32" fill="#263c5a"/><rect x="218" y="135" width="225" height="224" rx="24" fill="url(#screen)"/><path d="M250 300 L401 171" stroke="white" opacity=".22" stroke-width="24"/><rect x="285" y="338" width="90" height="9" rx="5" fill="#fff" opacity=".55"/></g>
+<rect x="22" y="22" width="105" height="31" rx="15" fill="#fff" opacity=".85"/><text x="74" y="43" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="#546782">NEXTECH</text>
+<text x="330" y="468" text-anchor="middle" font-size="20" font-weight="bold" font-family="Arial,sans-serif" fill="#677993">Pocket SSD</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="500" viewBox="0 0 660 500" role="img" aria-label="Ảnh minh họa StudyBook 14">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9f1ff"/><stop offset="1" stop-color="#f9fbff"/></linearGradient><linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5275c3"/><stop offset="1" stop-color="#1b315b"/></linearGradient></defs>
+<rect width="660" height="500" fill="url(#bg)"/>
+<circle cx="555" cy="75" r="136" fill="#5275c3" opacity=".11"/><circle cx="95" cy="435" r="175" fill="#5275c3" opacity=".08"/>
+<circle cx="108" cy="91" r="5" fill="#5275c3" opacity=".45"/><path d="M510 404h50m-25-25v50" stroke="#5275c3" stroke-width="3" opacity=".3"/>
+<ellipse cx="330" cy="414" rx="140" ry="21" fill="#1b365a" opacity=".09"/><g><rect x="140" y="91" width="380" height="260" rx="15" fill="#273c5a"/><rect x="151" y="102" width="358" height="237" rx="7" fill="url(#screen)"/><circle cx="329" cy="96" r="2.5" fill="#acbed8"/><path d="M105 354 H555 L525 390 H135Z" fill="#bac7da"/><path d="M128 353 H532 L513 375 H145Z" fill="#eef1f8"/><rect x="287" y="354" width="85" height="12" rx="6" fill="#9eacc1"/><path d="M165 310 Q307 151 495 226" stroke="#fff" stroke-width="37" fill="none" opacity=".12"/></g>
+<rect x="22" y="22" width="105" height="31" rx="15" fill="#fff" opacity=".85"/><text x="74" y="43" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="#546782">NEXTECH</text>
+<text x="330" y="468" text-anchor="middle" font-size="20" font-weight="bold" font-family="Arial,sans-serif" fill="#677993">StudyBook 14</text>
+</svg>

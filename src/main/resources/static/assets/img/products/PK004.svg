@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="500" viewBox="0 0 660 500" role="img" aria-label="Ảnh minh họa USB-C Hub">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0e8"/><stop offset="1" stop-color="#f9fbff"/></linearGradient><linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ce815c"/><stop offset="1" stop-color="#1b315b"/></linearGradient></defs>
+<rect width="660" height="500" fill="url(#bg)"/>
+<circle cx="555" cy="75" r="136" fill="#ce815c" opacity=".11"/><circle cx="95" cy="435" r="175" fill="#ce815c" opacity=".08"/>
+<circle cx="108" cy="91" r="5" fill="#ce815c" opacity=".45"/><path d="M510 404h50m-25-25v50" stroke="#ce815c" stroke-width="3" opacity=".3"/>
+<ellipse cx="330" cy="414" rx="140" ry="21" fill="#1b365a" opacity=".09"/><g transform="rotate(-24 330 250)"><rect x="218" y="177" width="243" height="119" rx="31" fill="#2a4366"/><rect x="229" y="187" width="222" height="99" rx="23" fill="url(#screen)"/><rect x="441" y="193" width="69" height="87" rx="10" fill="#c1cbd8"/><rect x="453" y="208" width="45" height="57" rx="5" fill="#8293a8"/><rect x="465" y="218" width="21" height="31" rx="3" fill="#e8f0fa"/><circle cx="265" cy="235" r="10" fill="#fff" opacity=".8"/></g>
+<rect x="22" y="22" width="105" height="31" rx="15" fill="#fff" opacity=".85"/><text x="74" y="43" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="#546782">NEXTECH</text>
+<text x="330" y="468" text-anchor="middle" font-size="20" font-weight="bold" font-family="Arial,sans-serif" fill="#677993">USB-C Hub</text>
+</svg>

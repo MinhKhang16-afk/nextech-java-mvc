@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="500" viewBox="0 0 660 500" role="img" aria-label="Ảnh minh họa C to Lightning">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0f4"/><stop offset="1" stop-color="#f9fbff"/></linearGradient><linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d67ca7"/><stop offset="1" stop-color="#1b315b"/></linearGradient></defs>
+<rect width="660" height="500" fill="url(#bg)"/>
+<circle cx="555" cy="75" r="136" fill="#d67ca7" opacity=".11"/><circle cx="95" cy="435" r="175" fill="#d67ca7" opacity=".08"/>
+<circle cx="108" cy="91" r="5" fill="#d67ca7" opacity=".45"/><path d="M510 404h50m-25-25v50" stroke="#d67ca7" stroke-width="3" opacity=".3"/>
+<ellipse cx="330" cy="414" rx="140" ry="21" fill="#1b365a" opacity=".09"/><path d="M231 169 C155 236 213 360 319 357 C424 352 442 220 354 208" fill="none" stroke="#405b7a" stroke-width="22" stroke-linecap="round"/><path d="M231 169 C155 236 213 360 319 357 C424 352 442 220 354 208" fill="none" stroke="#d67ca7" stroke-width="8" stroke-linecap="round" opacity=".75"/><g transform="rotate(-24 236 159)"><rect x="210" y="119" width="52" height="91" rx="15" fill="#9aa8be"/><rect x="220" y="93" width="32" height="39" rx="6" fill="#d4dce8"/><rect x="224" y="99" width="24" height="17" rx="3" fill="#304660"/></g><g transform="rotate(28 358 200)"><rect x="335" y="151" width="50" height="98" rx="16" fill="#758ba8"/><rect x="341" y="132" width="38" height="33" rx="6" fill="#d3dce8"/><rect x="348" y="137" width="24" height="16" rx="4" fill="#304660"/></g>
+<rect x="22" y="22" width="105" height="31" rx="15" fill="#fff" opacity=".85"/><text x="74" y="43" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="#546782">NEXTECH</text>
+<text x="330" y="468" text-anchor="middle" font-size="20" font-weight="bold" font-family="Arial,sans-serif" fill="#677993">C to Lightning</text>
+</svg>
