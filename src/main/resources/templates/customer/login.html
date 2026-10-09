@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Đăng nhập khách hàng')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main class="container section">
+  <div class="login-box customer-auth-box">
+    <span class="eyebrow">NEXTECH MEMBER</span>
+    <h1>Đăng nhập</h1>
+    <p class="muted">Sử dụng email và mật khẩu đã đăng ký.</p>
+    <div class="alert good" th:if="${param.registered}">Đăng ký thành công. Vui lòng đăng nhập.</div>
+    <div class="alert bad" th:if="${param.error}">Email hoặc mật khẩu không đúng, hoặc tài khoản bị khóa.</div>
+    <form th:action="@{/dang-nhap}" method="post">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <input type="hidden" name="loginType" value="customer">
+      <label>Email *<input class="input" type="email" name="username" maxlength="190" autocomplete="username" required autofocus placeholder="ban@example.com"></label>
+      <label>Mật khẩu *<input class="input" type="password" name="password" autocomplete="current-password" required></label>
+      <button type="submit" class="btn btn-orange block">Đăng nhập</button>
+    </form>
+    <p class="auth-switch">Chưa có tài khoản? <a class="link" th:href="@{/tai-khoan/dang-ky}">Đăng ký ngay</a></p>
+    <p class="auth-admin-link"><a th:href="@{/dang-nhap}">Đăng nhập dành cho quản trị viên</a></p>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body></html>

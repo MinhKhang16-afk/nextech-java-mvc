@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Tài khoản của tôi')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main class="container section">
+  <div class="login-box customer-auth-box">
+    <span class="eyebrow">NEXTECH MEMBER</span>
+    <h1>Tài khoản của tôi</h1>
+    <div class="alert good">Bạn đã đăng nhập thành công.</div>
+    <dl class="account-detail">
+      <dt>Họ và tên</dt><dd th:text="${fullName}">Khách hàng</dd>
+      <dt>Email</dt><dd th:text="${email}">email@example.com</dd>
+      <dt>Số điện thoại</dt><dd th:text="${#strings.isEmpty(phone) ? 'Chưa cập nhật' : phone}">0901234567</dd>
+      <dt>Ngày đăng ký</dt><dd th:text="${#temporals.format(createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</dd>
+    </dl>
+    <a class="btn btn-orange block" th:href="@{/san-pham}">Tiếp tục mua sắm</a>
+    <form th:action="@{/dang-xuat}" method="post">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <button class="btn btn-outline block" type="submit">Đăng xuất</button>
+    </form>
+    <p class="note">Đơn mua hiện tại vẫn thực hiện bằng thông tin giao hàng, chưa liên kết lịch sử đơn với tài khoản.</p>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body></html>

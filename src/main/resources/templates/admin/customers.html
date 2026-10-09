@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Quản lý tài khoản khách hàng')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<div th:replace="~{fragments :: alerts}"></div>
+<main class="container section">
+  <h1 class="admin-title">Quản lý tài khoản khách hàng</h1>
+  <div th:replace="~{admin/nav :: adminnav}"></div>
+  <div class="stats">
+    <div><span>Tổng tài khoản</span><strong th:text="${totalAccounts}">0</strong></div>
+    <div><span>Đang hoạt động</span><strong th:text="${activeAccounts}">0</strong></div>
+  </div>
+  <div class="panel">
+    <h2>Danh sách tài khoản đã đăng ký</h2>
+    <p class="note">Chỉ hiển thị tối đa 200 tài khoản gần nhất. Mật khẩu không được hiển thị.</p>
+    <form method="get" th:action="@{/quan-tri/tai-khoan}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0">
+      <input type="search" name="q" maxlength="100" placeholder="Tìm tên, email, số điện thoại..." th:value="${q}" style="min-width:240px;flex:1;padding:11px;border:1px solid #d1d5db;border-radius:8px">
+      <button type="submit" class="btn btn-dark">Tìm kiếm</button>
+      <a th:href="@{/quan-tri/tai-khoan}" class="btn btn-outline">Xóa bộ lọc</a>
+    </form>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Họ tên</th><th>Email</th><th>Số điện thoại</th>
+            <th>Ngày đăng ký</th><th>Trạng thái</th><th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="a : ${accounts}">
+            <td th:text="${a.id()}">1</td>
+            <td th:text="${a.fullName()}">Nguyễn Văn A</td>
+            <td th:text="${a.email()}">a@example.com</td>
+            <td th:text="${#strings.isEmpty(a.phone()) ? '—' : a.phone()}">0123456789</td>
+            <td th:text="${#temporals.format(a.createdAt(), 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+            <td><span class="badge" th:text="${a.active() ? 'Hoạt động' : 'Đã khóa'}">Hoạt động</span></td>
+            <td>
+              <form method="post" th:action="@{/quan-tri/tai-khoan/{id}/trang-thai(id=${a.id()})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="active" th:value="${!a.active()}">
+                <button type="submit" class="btn btn-small" th:text="${a.active() ? 'Khóa tài khoản' : 'Mở khóa'}">Khóa tài khoản</button>
+              </form>
+            </td>
+          </tr>
+          <tr th:if="${accounts.isEmpty()}"><td colspan="7">Chưa có tài khoản phù hợp.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

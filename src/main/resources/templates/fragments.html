@@ -11,6 +11,15 @@
   <div class="container nav">
     <a class="logo" th:href="@{/}"><span class="logo-symbol">N</span> NEX<span>TECH</span><small>TECH STORE</small></a>
     <nav class="links"><a th:href="@{/}">Trang chủ</a><a th:href="@{/san-pham}">Sản phẩm</a><a th:href="@{/san-pham(danh_muc=1)}">Điện thoại</a><a th:href="@{/san-pham(danh_muc=2)}">Laptop</a><a th:href="@{/quan-tri}">Quản trị</a></nav>
+    <div class="account-links">
+      <a th:if="${!customerLoggedIn}" th:href="@{/tai-khoan/dang-nhap}">Đăng nhập</a>
+      <a th:if="${!customerLoggedIn}" th:href="@{/tai-khoan/dang-ky}">Đăng ký</a>
+      <a th:if="${customerLoggedIn}" th:href="@{/tai-khoan}">👤 Tài khoản</a>
+      <form th:if="${customerLoggedIn}" th:action="@{/dang-xuat}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <button type="submit">Đăng xuất</button>
+      </form>
+    </div>
     <a class="cartpill" th:href="@{/gio-hang}">🛒 Giỏ hàng <b th:text="${cartCount}">0</b></a>
   </div>
 </header>
