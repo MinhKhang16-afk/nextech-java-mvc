@@ -1,1 +1,355 @@
-<!DOCTYPE html><html lang="vi" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Chi tiết đơn hàng')}"></head><body><header th:replace="~{fragments :: header}"></header><div th:replace="~{fragments :: alerts}"></div><main class="container section"><h1 class="admin-title" th:text="${'Đơn hàng ' + order.code()}">Chi tiết đơn hàng</h1><div th:replace="~{admin/nav :: adminnav}"></div><div class="checkout-layout"><div class="panel"><h2>Thông tin đơn hàng</h2><dl class="details"><dt>Người nhận</dt><dd th:text="${order.customerName()}"></dd><dt>Số điện thoại</dt><dd th:text="${order.phone()}"></dd><dt>Địa chỉ</dt><dd th:text="${order.address()}"></dd><dt>Ghi chú</dt><dd th:text="${order.note()}"></dd><dt>Thời gian</dt><dd th:text="${#temporals.format(order.createdAt(),'dd/MM/yyyy HH:mm')}"></dd></dl><h3>Sản phẩm trong đơn</h3><div class="tablewrap"><table><thead><tr><th>Sản phẩm</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody><tr th:each="line : ${lines}"><td th:text="${line.productName()}">Tên</td><td th:text="${line.quantity()}">1</td><td th:text="${#numbers.formatInteger(line.price(),3,'POINT') + '₫'}">0₫</td><td th:text="${#numbers.formatInteger(line.subtotal(),3,'POINT') + '₫'}">0₫</td></tr></tbody></table></div><div class="summary-line final"><span>Tổng đơn hàng</span><strong th:text="${#numbers.formatInteger(order.total(),3,'POINT') + '₫'}">0₫</strong></div></div><aside class="panel order-box"><h2>Tiếp nhận đơn</h2><span class="badge" th:text="${order.status()}">Chờ</span><p class="note">Trạng thái được cập nhật trong MySQL. Đơn bị hủy trước khi giao sẽ hoàn tồn kho.</p><form th:if="${order.status() == 'CHO_XAC_NHAN' or order.status() == 'DA_XAC_NHAN' or order.status() == 'DANG_GIAO'}" th:action="@{/quan-tri/don-hang/{id}/trang-thai(id=${order.id()})}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><div th:if="${order.status() == 'CHO_XAC_NHAN'}"><button class="btn btn-orange block" name="status" value="DA_XAC_NHAN">Xác nhận đơn</button></div><div th:if="${order.status() == 'DA_XAC_NHAN'}"><button class="btn btn-orange block" name="status" value="DANG_GIAO">Bắt đầu giao hàng</button></div><div th:if="${order.status() == 'DANG_GIAO'}"><button class="btn btn-orange block" name="status" value="HOAN_TAT">Hoàn tất đơn</button></div><div th:if="${order.status() == 'CHO_XAC_NHAN' or order.status() == 'DA_XAC_NHAN'}"><button class="btn btn-outline block" name="status" value="DA_HUY">Hủy đơn và hoàn tồn</button></div></form><p class="note" th:if="${order.status() == 'HOAN_TAT'}">✓ Đơn hàng đã hoàn tất.</p><p class="note" th:if="${order.status() == 'DA_HUY'}">Đơn hàng đã hủy.</p></aside></div></main><footer th:replace="~{fragments :: footer}"></footer></body></html>
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Chi tiết đơn hàng')}"></head>
+
+<body>
+
+<header th:replace="~{fragments :: header}"></header>
+
+<div th:replace="~{fragments :: alerts}"></div>
+
+<main class="container section">
+
+    <h1 class="admin-title"
+        th:text="${'Đơn hàng ' + order.code()}">
+        Chi tiết đơn hàng
+    </h1>
+
+    <div th:replace="~{admin/nav :: adminnav}"></div>
+
+    <div class="checkout-layout">
+
+        <!-- THÔNG TIN ĐƠN HÀNG -->
+        <div class="panel">
+
+            <h2>Thông tin đơn hàng</h2>
+
+            <dl class="details">
+
+                <dt>Mã đơn hàng</dt>
+                <dd th:text="${order.code()}"></dd>
+
+                <dt>Người nhận</dt>
+                <dd th:text="${order.customerName()}"></dd>
+
+                <dt>Số điện thoại</dt>
+                <dd th:text="${order.phone()}"></dd>
+
+                <dt>Địa chỉ</dt>
+                <dd th:text="${order.address()}"></dd>
+
+                <dt>Ghi chú</dt>
+                <dd th:text="${order.note()}"></dd>
+
+                <dt>Thời gian đặt</dt>
+                <dd th:text="${#temporals.format(order.createdAt(),'dd/MM/yyyy HH:mm')}"></dd>
+
+            </dl>
+
+            <hr>
+
+            <!-- THÔNG TIN THANH TOÁN -->
+            <h2>Thông tin thanh toán</h2>
+
+            <dl class="details">
+
+                <dt>Phương thức</dt>
+
+                <dd>
+                    <span th:if="${order.paymentMethod() == 'COD'}">
+                        Thanh toán khi nhận hàng (COD)
+                    </span>
+
+                    <span th:if="${order.paymentMethod() == 'CHUYEN_KHOAN'}">
+                        Chuyển khoản Vietcombank
+                    </span>
+                </dd>
+
+                <dt>Trạng thái thanh toán</dt>
+
+                <dd>
+                    <span th:if="${order.paymentStatus() == 'CHUA_THANH_TOAN'}">
+                        Chưa thanh toán - thu tiền khi giao hàng
+                    </span>
+
+                    <span th:if="${order.paymentStatus() == 'CHO_KIEM_TRA'}">
+                        Chờ Admin kiểm tra giao dịch
+                    </span>
+
+                    <span th:if="${order.paymentStatus() == 'DA_THANH_TOAN'}">
+                        Đã thanh toán
+                    </span>
+                </dd>
+
+                <dt>Thời gian thanh toán</dt>
+
+                <dd>
+                    <span th:if="${order.paidAt() != null}"
+                          th:text="${#temporals.format(order.paidAt(),'dd/MM/yyyy HH:mm')}">
+                    </span>
+
+                    <span th:if="${order.paidAt() == null}">
+                        Chưa có
+                    </span>
+                </dd>
+
+                <dt>Mã giao dịch ngân hàng</dt>
+
+                <dd>
+                    <span th:if="${order.bankTransactionCode() != null
+                                  and !order.bankTransactionCode().isBlank()}"
+                          th:text="${order.bankTransactionCode()}">
+                    </span>
+
+                    <span th:if="${order.bankTransactionCode() == null
+                                  or order.bankTransactionCode().isBlank()}">
+                        Chưa có
+                    </span>
+                </dd>
+
+            </dl>
+
+            <hr>
+
+            <!-- DANH SÁCH SẢN PHẨM -->
+            <h2>Sản phẩm trong đơn</h2>
+
+            <div class="tablewrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="line : ${lines}">
+
+                            <td th:text="${line.productName()}">
+                                Tên sản phẩm
+                            </td>
+
+                            <td th:text="${line.quantity()}">
+                                1
+                            </td>
+
+                            <td th:text="${#numbers.formatInteger(line.price(),3,'POINT') + '₫'}">
+                                0₫
+                            </td>
+
+                            <td th:text="${#numbers.formatInteger(line.subtotal(),3,'POINT') + '₫'}">
+                                0₫
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="summary-line final">
+
+                <span>Tổng đơn hàng</span>
+
+                <strong th:text="${#numbers.formatInteger(order.total(),3,'POINT') + '₫'}">
+                    0₫
+                </strong>
+
+            </div>
+
+        </div>
+
+        <!-- QUẢN LÝ ĐƠN HÀNG -->
+        <aside class="panel order-box">
+
+            <h2>Tiếp nhận đơn</h2>
+
+            <span class="badge"
+                  th:text="${order.status()}">
+                Chờ
+            </span>
+
+            <p class="note">
+                Trạng thái đơn hàng được cập nhật trong MySQL.
+                Đơn bị hủy trước khi giao sẽ hoàn tồn kho.
+            </p>
+
+            <hr>
+
+            <!-- XÁC NHẬN THANH TOÁN CHUYỂN KHOẢN -->
+            <div th:if="${order.paymentMethod() == 'CHUYEN_KHOAN'
+                         and order.paymentStatus() == 'CHO_KIEM_TRA'
+                         and order.status() != 'DA_HUY'}">
+
+                <h3>Kiểm tra chuyển khoản</h3>
+
+                <p class="note">
+                    Vui lòng kiểm tra tài khoản Vietcombank
+                    và xác nhận đã nhận đúng số tiền trước khi tiếp tục.
+                </p>
+
+                <form
+                    th:action="@{/quan-tri/don-hang/{id}/xac-nhan-thanh-toan(id=${order.id()})}"
+                    method="post">
+
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+                    <label for="transactionCode">
+                        Mã giao dịch ngân hàng (không bắt buộc)
+                    </label>
+
+                    <input
+                        type="text"
+                        id="transactionCode"
+                        name="transactionCode"
+                        maxlength="100"
+                        placeholder="Nhập mã giao dịch nếu có">
+
+                    <button class="btn btn-orange block"
+                            type="submit">
+                        Xác nhận đã nhận tiền
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- ĐÃ THANH TOÁN -->
+            <div th:if="${order.paymentMethod() == 'CHUYEN_KHOAN'
+                         and order.paymentStatus() == 'DA_THANH_TOAN'}">
+
+                <p class="note">
+                    ✓ Đã xác nhận nhận tiền chuyển khoản.
+                    Bạn có thể tiếp tục xử lý đơn hàng.
+                </p>
+
+            </div>
+
+            <!-- COD -->
+            <div th:if="${order.paymentMethod() == 'COD'}">
+
+                <p class="note">
+                    Khách hàng thanh toán khi nhận hàng.
+                    Tiếp tục xử lý đơn như quy trình COD hiện tại.
+                </p>
+
+            </div>
+
+            <hr>
+
+            <!-- CẬP NHẬT TRẠNG THÁI ĐƠN -->
+            <h3>Trạng thái xử lý đơn</h3>
+
+            <form
+                th:if="${order.status() == 'CHO_XAC_NHAN'
+                        or order.status() == 'DA_XAC_NHAN'
+                        or order.status() == 'DANG_GIAO'}"
+                th:action="@{/quan-tri/don-hang/{id}/trang-thai(id=${order.id()})}"
+                method="post">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <!-- Chờ xác nhận -->
+                <div th:if="${order.status() == 'CHO_XAC_NHAN'}">
+
+                    <div th:if="${order.paymentMethod() == 'COD'
+                                 or order.paymentStatus() == 'DA_THANH_TOAN'}">
+
+                        <button
+                            class="btn btn-orange block"
+                            type="submit"
+                            name="status"
+                            value="DA_XAC_NHAN">
+                            Xác nhận đơn
+                        </button>
+
+                    </div>
+
+                    <div th:if="${order.paymentMethod() == 'CHUYEN_KHOAN'
+                                 and order.paymentStatus() != 'DA_THANH_TOAN'}">
+
+                        <p class="note">
+                            Đơn chuyển khoản chưa được xác nhận thanh toán.
+                            Vui lòng kiểm tra tiền trước khi xác nhận đơn.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- Đã xác nhận -->
+                <div th:if="${order.status() == 'DA_XAC_NHAN'}">
+
+                    <button
+                        class="btn btn-orange block"
+                        type="submit"
+                        name="status"
+                        value="DANG_GIAO">
+                        Bắt đầu giao hàng
+                    </button>
+
+                </div>
+
+                <!-- Đang giao -->
+                <div th:if="${order.status() == 'DANG_GIAO'}">
+
+                    <button
+                        class="btn btn-orange block"
+                        type="submit"
+                        name="status"
+                        value="HOAN_TAT">
+                        Hoàn tất đơn
+                    </button>
+
+                </div>
+
+                <!-- Hủy đơn -->
+                <div th:if="${order.status() == 'CHO_XAC_NHAN'
+                             or order.status() == 'DA_XAC_NHAN'}">
+
+                    <button
+                        class="btn btn-outline block"
+                        type="submit"
+                        name="status"
+                        value="DA_HUY">
+                        Hủy đơn và hoàn tồn
+                    </button>
+
+                </div>
+
+            </form>
+
+            <p class="note"
+               th:if="${order.status() == 'HOAN_TAT'}">
+                ✓ Đơn hàng đã hoàn tất.
+            </p>
+
+            <p class="note"
+               th:if="${order.status() == 'DA_HUY'}">
+                Đơn hàng đã hủy.
+            </p>
+
+        </aside>
+
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+</body>
+</html>

@@ -1,1 +1,105 @@
-<!DOCTYPE html><html lang="vi" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Đặt hàng thành công')}"></head><body><header th:replace="~{fragments :: header}"></header><main class="container section"><div class="success"><div class="success-icon">✓</div><h1>Đã tiếp nhận đơn hàng!</h1><p>Thông tin đặt hàng đã được lưu vào MySQL với trạng thái chờ xác nhận.</p><div class="order-code">Mã đơn hàng <strong th:text="${orderCode}">DH123456</strong></div><p>Đây là hệ thống demo Java MVC, cửa hàng chưa thực hiện giao hàng thật.</p><a class="btn btn-orange" th:href="@{/san-pham}">Tiếp tục mua sắm</a></div></main><footer th:replace="~{fragments :: footer}"></footer></body></html>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Đặt hàng thành công')}"></head>
+
+<body>
+
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="container section">
+
+    <div class="success">
+
+        <div class="success-icon">✓</div>
+
+        <h1>Đã tiếp nhận đơn hàng!</h1>
+
+        <p>
+            Đơn hàng của bạn đã được lưu vào hệ thống NexTech.
+        </p>
+
+        <div class="order-code">
+            Mã đơn hàng
+
+            <strong th:text="${orderCode}">
+                DH123456
+            </strong>
+        </div>
+
+        <div class="panel"
+             th:if="${paymentMethod == 'CHUYEN_KHOAN'}">
+
+            <h2>Thanh toán Vietcombank QR</h2>
+
+            <p>
+                Vui lòng quét mã QR bằng ứng dụng ngân hàng.
+            </p>
+
+            <img th:src="${qrUrl}"
+                 alt="Mã QR thanh toán Vietcombank"
+                 style="width:100%;max-width:320px;height:auto;">
+
+            <p>
+                <strong>Ngân hàng:</strong>
+                Vietcombank
+            </p>
+
+            <p>
+                <strong>Số tài khoản:</strong>
+                <span th:text="${bankAccount}"></span>
+            </p>
+
+            <p>
+                <strong>Chủ tài khoản:</strong>
+                <span th:text="${bankAccountName}"></span>
+            </p>
+
+            <p>
+                <strong>Số tiền:</strong>
+
+                <span th:text="${#numbers.formatInteger(orderTotal,3,'POINT') + '₫'}">
+                </span>
+            </p>
+
+            <p>
+                <strong>Nội dung chuyển khoản:</strong>
+
+                <span th:text="${orderCode}"></span>
+            </p>
+
+            <p class="note">
+                Sau khi chuyển khoản, đơn hàng sẽ ở trạng thái
+                chờ quản trị viên kiểm tra và xác nhận tiền.
+            </p>
+
+        </div>
+
+        <div class="panel"
+             th:if="${paymentMethod == 'COD'}">
+
+            <h2>Thanh toán khi nhận hàng</h2>
+
+            <p>
+                Bạn sẽ thanh toán cho nhân viên giao hàng khi nhận sản phẩm.
+            </p>
+
+        </div>
+
+        <p>
+            Đây là hệ thống demo Java MVC của NexTech.
+        </p>
+
+        <a class="btn btn-orange"
+           th:href="@{/san-pham}">
+            Tiếp tục mua sắm
+        </a>
+
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+</body>
+</html>

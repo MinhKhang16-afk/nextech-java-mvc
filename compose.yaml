@@ -32,6 +32,9 @@ services:
       APP_ADMIN_USERNAME: ${APP_ADMIN_USERNAME}
       APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD}
       SHOP_UPLOAD_DIR: /data/uploads
+      PAYMENT_BANK_CODE: ${PAYMENT_BANK_CODE}
+      PAYMENT_BANK_ACCOUNT: ${PAYMENT_BANK_ACCOUNT}
+      PAYMENT_BANK_ACCOUNT_NAME: ${PAYMENT_BANK_ACCOUNT_NAME}
     volumes:
       - upload_data:/data/uploads
     depends_on:
