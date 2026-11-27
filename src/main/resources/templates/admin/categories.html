@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Quản lý danh mục')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<div th:replace="~{fragments :: alerts}"></div>
+<main class="container section">
+  <h1 class="admin-title">Quản lý danh mục sản phẩm</h1>
+  <div th:replace="~{admin/nav :: adminnav}"></div>
+  <div class="admin-actions">
+    <div><h2>Danh sách danh mục</h2><p class="note">Quản lý nhóm sản phẩm hiển thị trên cửa hàng.</p></div>
+    <a class="btn btn-orange" th:href="@{/quan-tri/danh-muc/them}">+ Thêm danh mục</a>
+  </div>
+  <div class="panel tablewrap">
+    <table>
+      <thead><tr><th>Thứ tự</th><th>Mã danh mục</th><th>Tên danh mục</th><th>Mô tả</th><th>Sản phẩm</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+      <tbody>
+        <tr th:each="c : ${categories}">
+          <td th:text="${c.sortOrder()}">1</td>
+          <td th:text="${c.code()}">PHONE</td>
+          <td th:text="${c.name()}">Điện thoại</td>
+          <td th:text="${#strings.isEmpty(c.description()) ? '—' : c.description()}">Mô tả</td>
+          <td th:text="${c.productCount()}">0</td>
+          <td><span class="badge" th:text="${c.active() ? 'Đang hoạt động' : 'Đang ẩn'}">Đang hoạt động</span></td>
+          <td>
+            <div class="category-actions">
+              <a class="link" th:href="@{/quan-tri/danh-muc/{id}/sua(id=${c.id()})}">Sửa</a>
+              <form method="post" th:action="@{/quan-tri/danh-muc/{id}/trang-thai(id=${c.id()})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="active" th:value="${!c.active()}">
+                <button class="btn btn-small" type="submit"
+                        th:text="${c.active() ? 'Ẩn danh mục' : 'Kích hoạt'}"
+                        th:disabled="${c.active() and c.productCount() > 0}">Ẩn danh mục</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <tr th:if="${categories.isEmpty()}"><td colspan="7">Chưa có danh mục.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Danh mục đang có sản phẩm không thể ẩn để tránh làm sản phẩm biến mất khỏi cửa hàng. Hãy chuyển sản phẩm sang danh mục khác trước.</p>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

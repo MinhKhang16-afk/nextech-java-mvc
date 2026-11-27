@@ -4,6 +4,7 @@
 <div th:fragment="adminnav" class="adminnav">
   <a th:href="@{/quan-tri}">📊 Tổng quan</a>
   <a th:href="@{/quan-tri/san-pham}">📱 Quản lý sản phẩm</a>
+  <a th:href="@{/quan-tri/danh-muc}">🗂️ Quản lý danh mục</a>
   <a th:href="@{/quan-tri/tai-khoan}">👥 Quản lý tài khoản</a>
   <form th:action="@{/dang-xuat}" method="post">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

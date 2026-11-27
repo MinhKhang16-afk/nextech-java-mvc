@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Thông tin danh mục')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main class="container section">
+  <h1 class="admin-title" th:text="${editId == null ? 'Thêm danh mục mới' : 'Chỉnh sửa danh mục'}">Danh mục</h1>
+  <div th:replace="~{admin/nav :: adminnav}"></div>
+  <div class="alert bad" th:if="${error}" th:text="${error}">Có lỗi</div>
+  <form class="panel edit-form" method="post" th:action="@{/quan-tri/danh-muc/luu}" th:object="${categoryForm}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <input type="hidden" name="id" th:if="${editId != null}" th:value="${editId}">
+    <label>Mã danh mục *
+      <input class="input" th:field="*{code}" maxlength="30" required placeholder="DIEN_THOAI">
+      <small class="note">Dùng chữ không dấu, số, dấu gạch ngang hoặc gạch dưới.</small>
+    </label>
+    <label>Tên danh mục *
+      <input class="input" th:field="*{name}" maxlength="100" required placeholder="Điện thoại">
+    </label>
+    <label>Mô tả
+      <textarea class="input" th:field="*{description}" maxlength="255" rows="3" placeholder="Mô tả ngắn về danh mục"></textarea>
+    </label>
+    <label>Thứ tự hiển thị
+      <input class="input" type="number" th:field="*{sortOrder}" min="0" max="100000">
+    </label>
+    <div class="checkboxes"><label><input type="checkbox" th:field="*{active}"> Hiển thị danh mục trên cửa hàng</label></div>
+    <p class="note" th:if="${productCount != null}"
+       th:text="'Danh mục hiện đang được ' + ${productCount} + ' sản phẩm sử dụng.'">Đang sử dụng</p>
+    <button class="btn btn-orange" type="submit">Lưu danh mục</button>
+    <a class="btn btn-outline" th:href="@{/quan-tri/danh-muc}">Quay lại</a>
+  </form>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
