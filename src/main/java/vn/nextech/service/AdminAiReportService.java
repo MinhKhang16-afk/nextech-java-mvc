@@ -39,9 +39,9 @@ public class AdminAiReportService {
 
     public AdminAiReportService(
             ObjectMapper mapper,
-            @Value("\${gemini.api-key:}") String apiKey,
-            @Value("\${gemini.model:gemini-3.1-flash-lite}") String model,
-            @Value("\${gemini.base-url:https://generativelanguage.googleapis.com/v1beta}") String baseUrl) {
+            @Value("${gemini.api-key:}") String apiKey,
+            @Value("${gemini.model:gemini-3.1-flash-lite}") String model,
+            @Value("${gemini.base-url:https://generativelanguage.googleapis.com/v1beta}") String baseUrl) {
         this.mapper = mapper;
         this.apiKey = apiKey == null ? "" : apiKey.trim();
         this.model = model == null || model.isBlank()
@@ -93,7 +93,7 @@ public class AdminAiReportService {
 
         try {
             JsonNode response = client.post()
-                .uri("/interactions")
+                .uri("interactions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("x-goog-api-key", apiKey)
                 .body(Map.of(
