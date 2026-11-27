@@ -16,6 +16,8 @@
         <small class="field-error" th:errors="*{email}"></small></label>
       <label>Số điện thoại (tùy chọn)<input class="input" type="tel" th:field="*{phone}" maxlength="20" autocomplete="tel" placeholder="0901234567">
         <small class="field-error" th:errors="*{phone}"></small></label>
+      <label>Ngày sinh (tùy chọn)<input class="input" type="date" th:field="*{birthDate}">
+        <small class="field-error" th:errors="*{birthDate}"></small></label>
       <label>Mật khẩu *<input class="input" type="password" name="password" minlength="8" maxlength="72" autocomplete="new-password" required>
         <small class="field-error" th:errors="*{password}"></small></label>
       <label>Xác nhận mật khẩu *<input class="input" type="password" name="confirmPassword" autocomplete="new-password" required>

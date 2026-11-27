@@ -1,5 +1,6 @@
 package vn.nextech.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record CustomerAccount(
@@ -9,5 +10,6 @@ public record CustomerAccount(
         String phone,
         String passwordHash,
         boolean active,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt,
+        LocalDate birthDate) {
 }

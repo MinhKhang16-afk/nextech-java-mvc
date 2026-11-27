@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý đơn hàng | NEXTECH</title>
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/admin-records.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<div th:replace="~{fragments :: alerts}"></div>
+<main class="container section">
+  <h1 class="admin-title">Quản lý đơn hàng</h1>
+  <div th:replace="~{admin/nav :: adminnav}"></div>
+
+  <div class="stats">
+    <div><span>Tổng đơn hàng toàn hệ thống</span><strong th:text="${allOrderCount}">0</strong></div>
+    <div><span>Kết quả theo bộ lọc</span><strong th:text="${resultCount}">0</strong></div>
+  </div>
+
+  <div class="panel">
+    <div class="admin-actions">
+      <div><h2>Danh sách đơn hàng</h2><p class="note">Tìm theo mã đơn, tên người nhận hoặc số điện thoại.</p></div>
+    </div>
+
+    <form class="record-filter order-filter" method="get" th:action="@{/quan-tri/don-hang}">
+      <label>Tìm kiếm
+        <input class="input" type="search" name="q" maxlength="100"
+               placeholder="Mã đơn, người nhận, điện thoại" th:value="${q}">
+      </label>
+      <label>Trạng thái đơn
+        <select class="input" name="status">
+          <option value="all" th:selected="${status == 'all'}">Tất cả trạng thái</option>
+          <option value="CHO_XAC_NHAN" th:selected="${status == 'CHO_XAC_NHAN'}">Chờ xác nhận</option>
+          <option value="DA_XAC_NHAN" th:selected="${status == 'DA_XAC_NHAN'}">Đã xác nhận</option>
+          <option value="DANG_GIAO" th:selected="${status == 'DANG_GIAO'}">Đang giao</option>
+          <option value="HOAN_TAT" th:selected="${status == 'HOAN_TAT'}">Hoàn tất</option>
+          <option value="DA_HUY" th:selected="${status == 'DA_HUY'}">Đã hủy</option>
+        </select>
+      </label>
+      <label>Thanh toán
+        <select class="input" name="paymentMethod">
+          <option value="all" th:selected="${paymentMethod == 'all'}">Tất cả phương thức</option>
+          <option value="COD" th:selected="${paymentMethod == 'COD'}">COD</option>
+          <option value="CHUYEN_KHOAN" th:selected="${paymentMethod == 'CHUYEN_KHOAN'}">Chuyển khoản</option>
+        </select>
+      </label>
+      <label>Trạng thái thanh toán
+        <select class="input" name="paymentStatus">
+          <option value="all" th:selected="${paymentStatus == 'all'}">Tất cả</option>
+          <option value="CHUA_THANH_TOAN" th:selected="${paymentStatus == 'CHUA_THANH_TOAN'}">Chưa thanh toán</option>
+          <option value="CHO_KIEM_TRA" th:selected="${paymentStatus == 'CHO_KIEM_TRA'}">Chờ kiểm tra</option>
+          <option value="DA_THANH_TOAN" th:selected="${paymentStatus == 'DA_THANH_TOAN'}">Đã thanh toán</option>
+        </select>
+      </label>
+      <label>Từ ngày
+        <input class="input" type="date" name="fromDate" th:value="${fromDate}">
+      </label>
+      <label>Đến ngày
+        <input class="input" type="date" name="toDate" th:value="${toDate}">
+      </label>
+      <div class="record-filter-actions">
+        <button class="btn btn-orange" type="submit">Áp dụng bộ lọc</button>
+        <a class="btn btn-outline" th:href="@{/quan-tri/don-hang}">Đặt lại</a>
+      </div>
+    </form>
+
+    <p class="note" th:if="${resultCount > 0}"
+       th:text="'Đang hiển thị ' + ${startNumber} + '–' + ${endNumber} + ' trên ' + ${resultCount} + ' đơn hàng.'">
+      Đang hiển thị đơn hàng
+    </p>
+    <div class="tablewrap">
+      <table class="records-table">
+        <thead>
+          <tr><th>Mã đơn</th><th>Ngày đặt</th><th>Người nhận</th><th>Tổng tiền</th><th>Thanh toán</th><th>Trạng thái</th><th>Chi tiết</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="o : ${orders}">
+            <td th:text="${o.code()}">DH</td>
+            <td th:text="${#temporals.format(o.createdAt(),'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+            <td><strong th:text="${o.customerName()}">Tên</strong><small class="table-subtext" th:text="${o.phone()}">Điện thoại</small></td>
+            <td th:text="${#numbers.formatInteger(o.total(),3,'POINT') + '₫'}">0₫</td>
+            <td>
+              <strong th:text="${o.paymentMethod() == 'COD' ? 'COD' : 'Chuyển khoản'}">COD</strong>
+              <small class="table-subtext" th:text="${o.paymentStatus()}">CHUA_THANH_TOAN</small>
+            </td>
+            <td><span class="badge" th:text="${o.status()}">Trạng thái</span></td>
+            <td><a class="link" th:href="@{/quan-tri/don-hang/{id}(id=${o.id()})}">Xem chi tiết</a></td>
+          </tr>
+          <tr th:if="${orders.isEmpty()}"><td colspan="7">Không có đơn hàng phù hợp bộ lọc.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <nav class="pagination" th:if="${totalPages > 1}" aria-label="Phân trang">
+      <a th:if="${currentPage > 0}"
+         th:href="@{/quan-tri/don-hang(q=${q},status=${status},paymentMethod=${paymentMethod},paymentStatus=${paymentStatus},fromDate=${fromDate},toDate=${toDate},page=${currentPage - 1})}">← Trước</a>
+      <span th:text="'Trang ' + ${currentPage + 1} + ' / ' + ${totalPages}">Trang 1 / 1</span>
+      <a th:if="${currentPage + 1 < totalPages}"
+         th:href="@{/quan-tri/don-hang(q=${q},status=${status},paymentMethod=${paymentMethod},paymentStatus=${paymentStatus},fromDate=${fromDate},toDate=${toDate},page=${currentPage + 1})}">Tiếp →</a>
+    </nav>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

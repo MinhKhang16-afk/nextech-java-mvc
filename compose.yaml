@@ -18,6 +18,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 25
+    # web uses network_mode: "service:db", so DNS must be configured here.
+    # Codespaces host uses Azure-provided DNS; Docker containers must use the same resolver.
+    dns:
+      - 168.63.129.16
     networks:
       - appnet
 
@@ -32,6 +36,9 @@ services:
       APP_ADMIN_USERNAME: ${APP_ADMIN_USERNAME}
       APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD}
       SHOP_UPLOAD_DIR: /data/uploads
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.1-flash-lite}
+      GEMINI_BASE_URL: ${GEMINI_BASE_URL:-https://generativelanguage.googleapis.com}
       PAYMENT_BANK_CODE: ${PAYMENT_BANK_CODE}
       PAYMENT_BANK_ACCOUNT: ${PAYMENT_BANK_ACCOUNT}
       PAYMENT_BANK_ACCOUNT_NAME: ${PAYMENT_BANK_ACCOUNT_NAME}

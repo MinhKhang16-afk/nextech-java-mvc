@@ -12,6 +12,7 @@
       <dt>Họ và tên</dt><dd th:text="${fullName}">Khách hàng</dd>
       <dt>Email</dt><dd th:text="${email}">email@example.com</dd>
       <dt>Số điện thoại</dt><dd th:text="${#strings.isEmpty(phone) ? 'Chưa cập nhật' : phone}">0901234567</dd>
+      <dt>Ngày sinh</dt><dd th:text="${birthDate == null ? 'Chưa cập nhật' : #temporals.format(birthDate, 'dd/MM/yyyy')}">Chưa cập nhật</dd>
       <dt>Ngày đăng ký</dt><dd th:text="${#temporals.format(createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</dd>
     </dl>
     <a class="btn btn-orange block" th:href="@{/san-pham}">Tiếp tục mua sắm</a>

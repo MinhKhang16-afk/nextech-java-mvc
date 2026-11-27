@@ -9,7 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.nextech.model.CustomerAccount;
 import vn.nextech.model.RegistrationForm;
 import vn.nextech.service.CustomerAccountService;
@@ -64,6 +63,7 @@ public class CustomerAccountController {
         model.addAttribute("fullName", account.fullName());
         model.addAttribute("email", account.email());
         model.addAttribute("phone", account.phone());
+        model.addAttribute("birthDate", account.birthDate());
         model.addAttribute("createdAt", account.createdAt());
         return "customer/profile";
     }
