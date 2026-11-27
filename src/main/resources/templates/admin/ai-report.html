@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo cáo AI | NEXTECH</title>
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/admin-ai-report.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<div th:replace="~{fragments :: alerts}"></div>
+<main class="container section">
+  <h1 class="admin-title">Báo cáo phân tích kinh doanh bằng AI</h1>
+  <div th:replace="~{admin/nav :: adminnav}"></div>
+
+  <section class="panel report-meta">
+    <div>
+      <span class="eyebrow">NEXTECH AI ANALYST</span>
+      <h2 th:text="${periodLabel}">Báo cáo tháng</h2>
+      <p class="muted" th:text="'Danh mục: ' + ${categoryLabel}">Tất cả danh mục</p>
+    </div>
+    <div class="report-model">
+      <span>Model</span>
+      <strong th:text="${modelName}">gpt-6.2-sol</strong>
+      <small th:text="${#temporals.format(generatedAt,'dd/MM/yyyy HH:mm')}">27/11/2026</small>
+    </div>
+  </section>
+
+  <section class="panel report-content">
+    <div class="section-heading">
+      <div><h2>Nhận xét và đề xuất</h2><p class="muted">Nội dung do AI tạo từ số liệu tổng hợp.</p></div>
+      <span class="badge">AI-generated</span>
+    </div>
+    <article class="report-text" th:text="${report}">Báo cáo hiển thị tại đây.</article>
+  </section>
+
+  <section class="panel report-note">
+    <strong>Lưu ý khi sử dụng báo cáo</strong>
+    <p class="note">AI có thể đưa ra giả thuyết, không thể xác nhận nguyên nhân kinh doanh nếu hệ thống chưa thu thập đủ dữ liệu. Admin cần kiểm tra số liệu trước khi quyết định khuyến mãi, thay đổi giá hoặc nhập hàng.</p>
+  </section>
+  <a class="btn btn-outline" th:href="@{/quan-tri}">← Quay lại Dashboard</a>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

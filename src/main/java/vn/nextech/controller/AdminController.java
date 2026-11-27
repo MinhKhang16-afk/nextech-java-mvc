@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.nextech.model.ProductForm;
 import vn.nextech.repository.AdminAnalyticsRepository;
+import vn.nextech.model.RevenueAiSnapshot;
+import vn.nextech.service.AdminAiReportService;
 import vn.nextech.repository.OrderRepository;
 import vn.nextech.repository.ShopRepository;
 import vn.nextech.service.ImageService;
@@ -22,6 +24,12 @@ import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.DateTimeException;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
@@ -35,15 +43,18 @@ public class AdminController {
     private final ShopRepository products;
     private final ImageService images;
     private final AdminAnalyticsRepository analytics;
+    private final AdminAiReportService aiReports;
 
     public AdminController(OrderRepository orders, OrderService orderService,
                            ShopRepository products, ImageService images,
-                           AdminAnalyticsRepository analytics) {
+                           AdminAnalyticsRepository analytics,
+                           AdminAiReportService aiReports) {
         this.orders = orders;
         this.orderService = orderService;
         this.products = products;
         this.images = images;
         this.analytics = analytics;
+        this.aiReports = aiReports;
     }
 
     @GetMapping({"", "/"})
@@ -110,10 +121,130 @@ public class AdminController {
         m.addAttribute("topProducts", analytics.bestSellingProducts(from, to, categoryId));
         m.addAttribute("topCustomers", analytics.topCustomers(from, to, categoryId));
         m.addAttribute("orders", orders.all().stream().limit(10).toList());
+        m.addAttribute("aiEnabled", aiReports.isEnabled());
 
         return "admin/dashboard";
     }
 
+
+
+    @PostMapping("/ai/bao-cao")
+    public String generateAiReport(
+            @RequestParam(defaultValue = "MONTH") String period,
+            @RequestParam(required = false)
+                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) Integer categoryId,
+            Model model,
+            RedirectAttributes flash) {
+
+        if (!aiReports.isEnabled()) {
+            flash.addFlashAttribute("error",
+                "AI chưa được cấu hình. Hãy thêm OPENAI_API_KEY vào file .env rồi khởi động lại web.");
+            return "redirect:/quan-tri";
+        }
+
+        if (!PERIODS.contains(period)) period = "MONTH";
+        if (date == null) date = LocalDate.now();
+        if (categoryId != null) {
+            int requestedCategory = categoryId;
+            boolean exists = products.categories().stream().anyMatch(c -> c.id() == requestedCategory);
+            if (!exists) categoryId = null;
+        }
+
+        LocalDate start = switch (period) {
+            case "DAY" -> date;
+            case "WEEK" -> date.with(DayOfWeek.MONDAY);
+            case "YEAR" -> date.withDayOfYear(1);
+            default -> date.withDayOfMonth(1);
+        };
+        LocalDate end = switch (period) {
+            case "DAY" -> start.plusDays(1);
+            case "WEEK" -> start.plusWeeks(1);
+            case "YEAR" -> start.plusYears(1);
+            default -> start.plusMonths(1);
+        };
+        LocalDate previousStart = switch (period) {
+            case "DAY" -> start.minusDays(1);
+            case "WEEK" -> start.minusWeeks(1);
+            case "YEAR" -> start.minusYears(1);
+            default -> start.minusMonths(1);
+        };
+
+        LocalDateTime from = start.atStartOfDay();
+        LocalDateTime to = end.atStartOfDay();
+        LocalDateTime previousFrom = previousStart.atStartOfDay();
+        LocalDateTime previousTo = start.atStartOfDay();
+
+        String categoryLabel = "Tất cả danh mục";
+        if (categoryId != null) {
+            for (var category : products.categories()) {
+                if (category.id() == categoryId) {
+                    categoryLabel = category.name();
+                    break;
+                }
+            }
+        }
+
+        long currentRevenue = analytics.revenue(from, to, categoryId);
+        long previousRevenue = analytics.revenue(previousFrom, previousTo, categoryId);
+        long currentOrders = analytics.totalOrders(from, to, categoryId);
+        long previousOrders = analytics.totalOrders(previousFrom, previousTo, categoryId);
+        long currentCompleted = analytics.ordersByStatus(from, to, categoryId, "HOAN_TAT");
+        long previousCompleted = analytics.ordersByStatus(previousFrom, previousTo, categoryId, "HOAN_TAT");
+
+        List<Map<String, Object>> currentProducts = analytics.bestSellingProducts(from, to, categoryId)
+            .stream().map(p -> {
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("name", p.name());
+                item.put("category", p.category());
+                item.put("quantity", p.quantity());
+                item.put("completedRevenueVnd", p.revenue());
+                return item;
+            }).toList();
+        List<Map<String, Object>> previousProducts = analytics.bestSellingProducts(previousFrom, previousTo, categoryId)
+            .stream().map(p -> {
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("name", p.name());
+                item.put("category", p.category());
+                item.put("quantity", p.quantity());
+                item.put("completedRevenueVnd", p.revenue());
+                return item;
+            }).toList();
+
+        String periodLabel = switch (period) {
+            case "DAY" -> "Ngày " + start.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            case "WEEK" -> "Tuần " + start.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                + " – " + end.minusDays(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            case "YEAR" -> "Năm " + start.getYear();
+            default -> "Tháng " + start.format(DateTimeFormatter.ofPattern("MM/yyyy"));
+        };
+
+        RevenueAiSnapshot snapshot = new RevenueAiSnapshot(
+            periodLabel, categoryLabel,
+            currentRevenue, previousRevenue,
+            currentOrders, previousOrders,
+            currentCompleted, previousCompleted,
+            analytics.ordersByStatus(from, to, categoryId, "CHO_XAC_NHAN"),
+            analytics.ordersByStatus(from, to, categoryId, "DANG_GIAO"),
+            analytics.ordersByStatus(from, to, categoryId, "DA_HUY"),
+            analytics.activeProducts(categoryId),
+            analytics.lowStockProducts(categoryId),
+            analytics.outOfStockProducts(categoryId),
+            currentProducts, previousProducts
+        );
+
+        try {
+            model.addAttribute("report", aiReports.generateRevenueReport(snapshot));
+            model.addAttribute("periodLabel", periodLabel);
+            model.addAttribute("categoryLabel", categoryLabel);
+            model.addAttribute("modelName", aiReports.model());
+            model.addAttribute("generatedAt", ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
+            return "admin/ai-report";
+        } catch (IllegalStateException ex) {
+            flash.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/quan-tri";
+        }
+    }
 
     @GetMapping("/don-hang")
     public String orderList(

@@ -147,6 +147,30 @@
     </article>
   </section>
 
+
+  <section class="dashboard-section panel ai-report-panel">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">NEXTECH AI ANALYST</span>
+        <h2>Phân tích doanh thu và tạo báo cáo AI</h2>
+        <p class="muted">So sánh kỳ đang xem với kỳ liền trước và nhận gợi ý từ số liệu bán hàng.</p>
+      </div>
+    </div>
+    <form method="post" th:action="@{/quan-tri/ai/bao-cao}">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <input type="hidden" name="period" th:value="${period}">
+      <input type="hidden" name="date" th:value="${filterDate}">
+      <input type="hidden" name="categoryId" th:if="${categoryId != null}" th:value="${categoryId}">
+      <div class="ai-report-actions">
+        <button class="btn btn-orange ai-report-submit" type="submit" th:disabled="${!aiEnabled}">
+          Tạo báo cáo AI cho kỳ đang chọn
+        </button>
+        <span class="ai-report-hint" th:if="${aiEnabled}">Chỉ gọi AI khi Admin bấm nút; mỗi lần tạo báo cáo có thể phát sinh phí API.</span>
+        <span class="ai-report-hint" th:if="${!aiEnabled}">Chưa cấu hình OPENAI_API_KEY. Thêm API key trong file .env để bật chức năng.</span>
+      </div>
+    </form>
+  </section>
+
   <section class="dashboard-section panel">
     <div class="section-heading"><div><h2>Đơn hàng mới nhất</h2><p class="muted">10 đơn hàng gần đây nhất trên toàn hệ thống.</p></div></div>
     <div class="tablewrap">
