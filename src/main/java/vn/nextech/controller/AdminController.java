@@ -139,7 +139,7 @@ public class AdminController {
 
         if (!aiReports.isEnabled()) {
             flash.addFlashAttribute("error",
-                "AI chưa được cấu hình. Hãy thêm OPENAI_API_KEY vào file .env rồi khởi động lại web.");
+                "AI chưa được cấu hình. Hãy thêm GEMINI_API_KEY vào file .env rồi khởi động lại web.");
             return "redirect:/quan-tri";
         }
 
