@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.ResourceAccessException;
 import vn.nextech.model.RevenueAiSnapshot;
 
 import java.net.http.HttpClient;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Service
 public class AdminAiReportService {
-    private static final String INSTRUCTIONS = """
+    private static final String SYSTEM_INSTRUCTION = """
         Bạn là chuyên viên phân tích dữ liệu cho cửa hàng thương mại điện tử NexTech.
         Hãy viết báo cáo bằng tiếng Việt, rõ ràng, thực tế và có cấu trúc.
         Chỉ sử dụng số liệu được cung cấp. Không bịa dữ liệu, không khẳng định quan hệ
@@ -39,18 +39,21 @@ public class AdminAiReportService {
 
     public AdminAiReportService(
             ObjectMapper mapper,
-            @Value("${openai.api-key:}") String apiKey,
-            @Value("${openai.model:gpt-6.2-sol}") String model,
-            @Value("${openai.base-url:https://api.openai.com/v1}") String baseUrl) {
+            @Value("\${gemini.api-key:}") String apiKey,
+            @Value("\${gemini.model:gemini-3.1-flash-lite}") String model,
+            @Value("\${gemini.base-url:https://generativelanguage.googleapis.com/v1beta}") String baseUrl) {
         this.mapper = mapper;
         this.apiKey = apiKey == null ? "" : apiKey.trim();
-        this.model = model == null || model.isBlank() ? "gpt-6.2-sol" : model.trim();
+        this.model = model == null || model.isBlank()
+            ? "gemini-3.1-flash-lite"
+            : model.trim();
 
         HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
         JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(http);
-        factory.setReadTimeout(Duration.ofSeconds(60));
+        factory.setReadTimeout(Duration.ofSeconds(90));
+
         this.client = RestClient.builder()
             .baseUrl(baseUrl)
             .requestFactory(factory)
@@ -68,7 +71,7 @@ public class AdminAiReportService {
     public String generateRevenueReport(RevenueAiSnapshot snapshot) {
         if (!isEnabled()) {
             throw new IllegalStateException(
-                "Chưa cấu hình OPENAI_API_KEY. Hãy thêm API key vào file .env của Codespaces."
+                "Chưa cấu hình GEMINI_API_KEY. Hãy thêm API key Google AI Studio vào file .env."
             );
         }
 
@@ -90,59 +93,109 @@ public class AdminAiReportService {
 
         try {
             JsonNode response = client.post()
-                .uri("/responses")
+                .uri("/interactions")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + apiKey)
+                .header("x-goog-api-key", apiKey)
                 .body(Map.of(
                     "model", model,
-                    "instructions", INSTRUCTIONS,
+                    "system_instruction", SYSTEM_INSTRUCTION,
                     "input", input,
-                    "max_output_tokens", 1400
+                    "store", false,
+                    "generation_config", Map.of("max_output_tokens", 1400)
                 ))
                 .retrieve()
                 .body(JsonNode.class);
 
             String report = extractText(response);
+            String status = response == null ? "" : response.path("status").asText("");
             if (report.isBlank()) {
-                throw new IllegalStateException("AI không trả về nội dung báo cáo.");
+                if ("incomplete".equalsIgnoreCase(status)) {
+                    throw new IllegalStateException(
+                        "Gemini đã dừng trước khi hoàn tất báo cáo. Hãy thử lại với kỳ dữ liệu ngắn hơn."
+                    );
+                }
+                throw new IllegalStateException(
+                    "Gemini không trả về nội dung báo cáo hoàn chỉnh. Trạng thái: " +
+                    (status.isBlank() ? "không xác định" : status)
+                );
+            }
+            if (!status.isBlank() && !"completed".equalsIgnoreCase(status)) {
+                throw new IllegalStateException(
+                    "Báo cáo AI chưa hoàn tất. Trạng thái trả về: " + status
+                );
             }
             return report;
         } catch (RestClientResponseException ex) {
             int status = ex.getStatusCode().value();
+            if (status == 400) {
+                throw new IllegalStateException(
+                    "Yêu cầu Gemini không hợp lệ. Hãy kiểm tra GEMINI_MODEL trong file .env."
+                );
+            }
             if (status == 401) {
-                throw new IllegalStateException("OpenAI API key không hợp lệ hoặc chưa được cấp quyền.");
+                throw new IllegalStateException(
+                    "Gemini API key không hợp lệ. Hãy tạo key tại Google AI Studio và cập nhật GEMINI_API_KEY."
+                );
+            }
+            if (status == 403) {
+                throw new IllegalStateException(
+                    "Google từ chối quyền truy cập Gemini API. Kiểm tra project, API key và quyền Gemini API."
+                );
+            }
+            if (status == 404) {
+                throw new IllegalStateException(
+                    "Không tìm thấy model Gemini đã chọn. Kiểm tra GEMINI_MODEL trong file .env."
+                );
             }
             if (status == 429) {
-                throw new IllegalStateException("OpenAI đang giới hạn tốc độ hoặc tài khoản đã hết hạn mức API.");
+                throw new IllegalStateException(
+                    "Gemini Free Tier đã chạm giới hạn yêu cầu/token. Hãy chờ hạn mức được làm mới rồi thử lại."
+                );
             }
-            if (status == 400) {
-                throw new IllegalStateException("Yêu cầu AI không hợp lệ. Hãy kiểm tra OPENAI_MODEL trong file .env.");
+            if (status == 503) {
+                throw new IllegalStateException(
+                    "Gemini đang quá tải tạm thời. Vui lòng thử lại sau."
+                );
             }
-            throw new IllegalStateException("OpenAI API gặp lỗi HTTP " + status + ". Vui lòng thử lại sau.");
+            throw new IllegalStateException(
+                "Gemini API gặp lỗi HTTP " + status + ". Vui lòng kiểm tra Google AI Studio."
+            );
         } catch (ResourceAccessException ex) {
-            throw new IllegalStateException("Kết nối OpenAI quá thời gian chờ. Vui lòng thử lại.");
+            throw new IllegalStateException(
+                "Kết nối Gemini quá thời gian chờ. Kiểm tra mạng Codespaces hoặc thử lại sau."
+            );
         } catch (IllegalStateException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new IllegalStateException("Không thể tạo báo cáo AI lúc này. Vui lòng thử lại.");
+            throw new IllegalStateException("Không thể tạo báo cáo Gemini lúc này. Vui lòng thử lại.");
         }
     }
 
     private String extractText(JsonNode response) {
-        if (response == null || !response.path("output").isArray()) return "";
-        StringBuilder text = new StringBuilder();
-        for (JsonNode item : response.path("output")) {
-            if (!"message".equals(item.path("type").asText())) continue;
-            for (JsonNode part : item.path("content")) {
-                if ("output_text".equals(part.path("type").asText())) {
+        if (response == null) return "";
+
+        String directText = response.path("output_text").asText("");
+        if (!directText.isBlank()) return directText.trim();
+
+        JsonNode steps = response.path("steps");
+        if (!steps.isArray()) return "";
+
+        StringBuilder result = new StringBuilder();
+        for (JsonNode step : steps) {
+            if (!"model_output".equals(step.path("type").asText())) continue;
+            JsonNode content = step.path("content");
+            if (!content.isArray()) continue;
+
+            for (JsonNode part : content) {
+                if ("text".equals(part.path("type").asText())) {
                     String value = part.path("text").asText("");
                     if (!value.isBlank()) {
-                        if (!text.isEmpty()) text.append("\n");
-                        text.append(value);
+                        if (!result.isEmpty()) result.append("\n");
+                        result.append(value);
                     }
                 }
             }
         }
-        return text.toString().trim();
+        return result.toString().trim();
     }
 }
