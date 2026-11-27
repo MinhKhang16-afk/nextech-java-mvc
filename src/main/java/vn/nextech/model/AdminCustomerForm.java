@@ -12,4 +12,5 @@ public class AdminCustomerForm {
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
     public LocalDate getBirthDate() { return birthDate; }
+    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
 }
