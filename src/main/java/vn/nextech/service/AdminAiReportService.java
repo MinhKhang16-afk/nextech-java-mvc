@@ -93,7 +93,7 @@ public class AdminAiReportService {
 
         try {
             JsonNode response = client.post()
-                .uri("interactions")
+                .uri("/v1beta/interactions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("x-goog-api-key", apiKey)
                 .body(Map.of(
