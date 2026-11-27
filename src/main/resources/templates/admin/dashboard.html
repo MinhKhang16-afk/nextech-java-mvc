@@ -128,8 +128,8 @@
     <article class="panel">
       <div class="section-heading"><div><h2>Khách hàng & đăng ký</h2><p class="muted">Tổng khách mua hàng được gộp theo email/số điện thoại.</p></div></div>
       <div class="customer-summary">
-        <div><span>Tổng khách hàng</span><strong th:text="${customerCount}">0</strong></div>
-        <div><span>Khách mới trong tháng đã chọn</span><strong th:text="${newCustomers}">0</strong></div>
+        <div><span>Khách mua hàng (gộp email/số điện thoại)</span><strong th:text="${customerCount}">0</strong></div>
+        <div><span>Tài khoản đăng ký mới trong tháng</span><strong th:text="${newCustomers}">0</strong></div>
       </div>
       <p class="note" th:text="'Tài khoản thành viên đã đăng ký: ' + ${customerAccountCount}">Tài khoản thành viên đã đăng ký: 0</p>
       <a class="btn btn-outline block" th:href="@{/quan-tri/tai-khoan}">Xem tài khoản khách hàng</a>
