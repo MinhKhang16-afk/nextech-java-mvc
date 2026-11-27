@@ -165,8 +165,8 @@
         <button class="btn btn-orange ai-report-submit" type="submit" th:disabled="${!aiEnabled}">
           Tạo báo cáo AI cho kỳ đang chọn
         </button>
-        <span class="ai-report-hint" th:if="${aiEnabled}">Chỉ gọi AI khi Admin bấm nút; mỗi lần tạo báo cáo có thể phát sinh phí API.</span>
-        <span class="ai-report-hint" th:if="${!aiEnabled}">Chưa cấu hình OPENAI_API_KEY. Thêm API key trong file .env để bật chức năng.</span>
+        <span class="ai-report-hint" th:if="${aiEnabled}">Chỉ gọi AI khi Admin bấm nút. Free Tier có giới hạn; không gửi dữ liệu kinh doanh nhạy cảm.</span>
+        <span class="ai-report-hint" th:if="${!aiEnabled}">Chưa cấu hình GEMINI_API_KEY. Thêm GEMINI_API_KEY trong file .env để bật chức năng. Google có thể dùng nội dung Free Tier để cải thiện sản phẩm.</span>
       </div>
     </form>
   </section>
