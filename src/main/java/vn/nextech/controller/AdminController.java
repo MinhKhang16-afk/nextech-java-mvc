@@ -55,9 +55,11 @@ public class AdminController {
 
         if (!PERIODS.contains(period)) period = "MONTH";
         if (date == null) date = LocalDate.now();
-        if (categoryId != null &&
-                products.categories().stream().noneMatch(c -> c.id() == categoryId)) {
-            categoryId = null;
+        if (categoryId != null) {
+            int requestedCategoryId = categoryId;
+            boolean categoryExists = products.categories().stream()
+                .anyMatch(c -> c.id() == requestedCategoryId);
+            if (!categoryExists) categoryId = null;
         }
 
         LocalDate start = switch (period) {
