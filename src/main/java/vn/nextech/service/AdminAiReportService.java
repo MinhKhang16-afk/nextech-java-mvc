@@ -4,19 +4,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 import vn.nextech.model.RevenueAiSnapshot;
 
-import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Map;
 
 @Service
 public class AdminAiReportService {
+    private static final Logger log = LoggerFactory.getLogger(AdminAiReportService.class);
+
     private static final String SYSTEM_INSTRUCTION = """
         Bạn là chuyên viên phân tích dữ liệu cho cửa hàng thương mại điện tử NexTech.
         Hãy viết báo cáo bằng tiếng Việt, rõ ràng, thực tế và có cấu trúc.
@@ -48,11 +51,9 @@ public class AdminAiReportService {
             ? "gemini-3.1-flash-lite"
             : model.trim();
 
-        HttpClient http = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
-        JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(http);
-        factory.setReadTimeout(Duration.ofSeconds(90));
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(15));
+        factory.setReadTimeout(Duration.ofSeconds(120));
 
         this.client = RestClient.builder()
             .baseUrl(baseUrl)
@@ -101,6 +102,8 @@ public class AdminAiReportService {
                     "system_instruction", SYSTEM_INSTRUCTION,
                     "input", input,
                     "store", false,
+                    "stream", false,
+                    "background", false,
                     "generation_config", Map.of("max_output_tokens", 1400)
                 ))
                 .retrieve()
@@ -127,6 +130,7 @@ public class AdminAiReportService {
             return report;
         } catch (RestClientResponseException ex) {
             int status = ex.getStatusCode().value();
+            log.warn("Gemini API returned HTTP status {}", status);
             if (status == 400) {
                 throw new IllegalStateException(
                     "Yêu cầu Gemini không hợp lệ. Hãy kiểm tra GEMINI_MODEL trong file .env."
@@ -161,8 +165,15 @@ public class AdminAiReportService {
                 "Gemini API gặp lỗi HTTP " + status + ". Vui lòng kiểm tra Google AI Studio."
             );
         } catch (ResourceAccessException ex) {
+            Throwable root = ex;
+            while (root.getCause() != null && root.getCause() != root) {
+                root = root.getCause();
+            }
+            log.warn("Gemini transport failure: {} - {}",
+                root.getClass().getSimpleName(), root.getMessage(), ex);
             throw new IllegalStateException(
-                "Kết nối Gemini quá thời gian chờ. Kiểm tra mạng Codespaces hoặc thử lại sau."
+                "Java không nhận được phản hồi Gemini trong thời gian chờ. " +
+                "Đã ghi nguyên nhân kỹ thuật an toàn vào web log; chạy docker compose logs --tail=120 web để kiểm tra."
             );
         } catch (IllegalStateException ex) {
             throw ex;
