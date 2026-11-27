@@ -67,15 +67,9 @@ public class PasswordResetService {
         message.setFrom(fromAddress);
         message.setTo(account.email());
         message.setSubject("Đặt lại mật khẩu NexTech");
-        message.setText("Xin chào " + account.fullName() + ",
-
-" +
-            "Bạn vừa yêu cầu đặt lại mật khẩu NexTech. Liên kết chỉ có hiệu lực trong 30 phút và chỉ sử dụng một lần:
-
-" +
-            resetUrl + "?token=" + token + "
-
-" +
+        message.setText("Xin chào " + account.fullName() + ",\n\n" +
+            "Bạn vừa yêu cầu đặt lại mật khẩu NexTech. Liên kết chỉ có hiệu lực trong 30 phút và chỉ sử dụng một lần:\n\n" +
+            resetUrl + "?token=" + token + "\n\n" +
             "Nếu bạn không yêu cầu, hãy bỏ qua email này.");
         try {
             mailSender.getObject().send(message);
