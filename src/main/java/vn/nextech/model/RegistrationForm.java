@@ -2,8 +2,10 @@ package vn.nextech.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 
 public class RegistrationForm {
     @NotBlank(message = "Vui lòng nhập họ tên")
@@ -18,6 +20,9 @@ public class RegistrationForm {
     @Pattern(regexp = "^$|^[0-9+ .()\\-]{9,20}$", message = "Số điện thoại không hợp lệ")
     private String phone = "";
 
+    @PastOrPresent(message = "Ngày sinh không được nằm trong tương lai")
+    private LocalDate birthDate;
+
     @NotBlank(message = "Vui lòng nhập mật khẩu")
     @Size(min = 8, max = 72, message = "Mật khẩu từ 8 đến 72 ký tự")
     private String password;
@@ -31,6 +36,8 @@ public class RegistrationForm {
     public void setEmail(String email) { this.email = email; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+    public LocalDate getBirthDate() { return birthDate; }
+    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
     public String getConfirmPassword() { return confirmPassword; }

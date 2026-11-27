@@ -1,1 +1,171 @@
-<!DOCTYPE html><html lang="vi" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Quản lý đơn hàng')}"></head><body><header th:replace="~{fragments :: header}"></header><div th:replace="~{fragments :: alerts}"></div><main class="container section"><h1 class="admin-title">Trung tâm quản trị</h1><div th:replace="~{admin/nav :: adminnav}"></div><div class="stats"><div><span>Tổng đơn hàng</span><strong th:text="${orderCount}">0</strong></div><div><span>Doanh thu hoàn tất (demo)</span><strong th:text="${#numbers.formatInteger(revenue,3,'POINT') + '₫'}">0₫</strong></div></div><div class="panel"><h2>Danh sách đơn hàng</h2><div class="tablewrap"><table><thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Điện thoại</th><th>Tổng tiền</th><th>Trạng thái</th><th>Chi tiết</th></tr></thead><tbody><tr th:each="o : ${orders}"><td th:text="${o.code()}">DH</td><td th:text="${o.customerName()}">Tên</td><td th:text="${o.phone()}">SĐT</td><td th:text="${#numbers.formatInteger(o.total(),3,'POINT') + '₫'}">0₫</td><td><span class="badge" th:text="${o.status()}">Trạng thái</span></td><td><a class="link" th:href="@{/quan-tri/don-hang/{id}(id=${o.id()})}">Xem →</a></td></tr><tr th:if="${orders.isEmpty()}"><td colspan="6">Chưa có đơn hàng.</td></tr></tbody></table></div></div></main><footer th:replace="~{fragments :: footer}"></footer></body></html>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tổng quan quản trị | NEXTECH</title>
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/admin-dashboard.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<div th:replace="~{fragments :: alerts}"></div>
+<main class="container section admin-dashboard">
+  <div class="admin-heading">
+    <div>
+      <span class="eyebrow">NEXTECH CONTROL CENTER</span>
+      <h1 class="admin-title">Tổng quan kinh doanh</h1>
+      <p class="muted">Theo dõi doanh thu, đơn hàng, khách hàng và tình trạng kho.</p>
+    </div>
+  </div>
+  <div th:replace="~{admin/nav :: adminnav}"></div>
+
+  <section class="panel filter-panel">
+    <div class="section-heading">
+      <div><h2>Bộ lọc báo cáo</h2><p class="muted">Chọn khoảng thời gian và danh mục muốn xem.</p></div>
+      <span class="range-label" th:text="${#temporals.format(rangeStart,'dd/MM/yyyy') + ' – ' + #temporals.format(rangeEnd,'dd/MM/yyyy')}">01/01/2026 – 31/01/2026</span>
+    </div>
+    <form class="dashboard-filter" method="get" th:action="@{/quan-tri}">
+      <label>Kiểu thống kê
+        <select name="period" class="input">
+          <option value="DAY" th:selected="${period == 'DAY'}">Theo ngày</option>
+          <option value="WEEK" th:selected="${period == 'WEEK'}">Theo tuần</option>
+          <option value="MONTH" th:selected="${period == 'MONTH'}">Theo tháng</option>
+          <option value="YEAR" th:selected="${period == 'YEAR'}">Theo năm</option>
+        </select>
+      </label>
+      <label>Ngày tham chiếu
+        <input class="input" type="date" name="date" th:value="${filterDate}">
+      </label>
+      <label>Danh mục sản phẩm
+        <select class="input" name="categoryId">
+          <option value="">Tất cả danh mục</option>
+          <option th:each="c : ${categories}" th:value="${c.id()}"
+                  th:selected="${categoryId != null and categoryId == c.id()}"
+                  th:text="${c.name()}">Danh mục</option>
+        </select>
+      </label>
+      <div class="filter-actions">
+        <button class="btn btn-orange" type="submit">Áp dụng bộ lọc</button>
+        <a class="btn btn-outline" th:href="@{/quan-tri}">Đặt lại</a>
+      </div>
+    </form>
+  </section>
+
+  <section class="dashboard-section">
+    <div class="section-heading"><div><h2>Hiệu quả kinh doanh</h2><p class="muted">Doanh thu chỉ tính các đơn hàng đã hoàn tất.</p></div></div>
+    <div class="kpi-grid kpi-grid-main">
+      <article class="kpi-card kpi-highlight"><span>Doanh thu trong kỳ</span><strong th:text="${#numbers.formatInteger(revenue,3,'POINT') + '₫'}">0₫</strong><small>Đơn hàng trạng thái HOAN_TAT</small></article>
+      <article class="kpi-card"><span>Tổng đơn hàng</span><strong th:text="${orderCount}">0</strong><small>Trong khoảng thời gian đã chọn</small></article>
+      <article class="kpi-card"><span>Chờ xác nhận</span><strong th:text="${waitingOrders}">0</strong><small>Đơn cần xử lý</small></article>
+      <article class="kpi-card"><span>Đang giao</span><strong th:text="${shippingOrders}">0</strong><small>Đơn đang vận chuyển</small></article>
+      <article class="kpi-card"><span>Đã hoàn thành</span><strong th:text="${completedOrders}">0</strong><small>Đơn hoàn tất</small></article>
+      <article class="kpi-card"><span>Đã hủy</span><strong th:text="${cancelledOrders}">0</strong><small>Đơn đã hủy</small></article>
+      <article class="kpi-card"><span>Đã xác nhận</span><strong th:text="${confirmedOrders}">0</strong><small>Đơn đã duyệt</small></article>
+    </div>
+  </section>
+
+  <section class="dashboard-section dashboard-two-column">
+    <article class="panel">
+      <div class="section-heading"><div><h2>Biểu đồ doanh thu</h2><p class="muted">Theo nhóm thời gian đang chọn.</p></div></div>
+      <div class="chart-area" th:if="${!revenueChart.isEmpty()}">
+        <div class="chart-column" th:each="point : ${revenueChart}">
+          <strong class="chart-amount" th:text="${#numbers.formatInteger(point.amount(),3,'POINT')}">0</strong>
+          <div class="chart-bar-track"><div class="chart-bar" th:style="'height:' + ${point.percent()} + '%'"></div></div>
+          <span th:text="${point.label()}">01/01</span>
+        </div>
+      </div>
+      <p class="empty-state" th:if="${revenueChart.isEmpty()}">Chưa có đơn hàng hoàn tất trong khoảng thời gian này.</p>
+    </article>
+    <article class="panel inventory-panel">
+      <div class="section-heading"><div><h2>Tình trạng sản phẩm</h2><p class="muted">Chỉ tính sản phẩm đang được kích hoạt kinh doanh.</p></div></div>
+      <div class="inventory-list">
+        <div><span>Tổng sản phẩm kinh doanh</span><strong th:text="${productCount}">0</strong></div>
+        <div><span>Đang còn hàng để bán</span><strong th:text="${sellingProductCount}">0</strong></div>
+        <div class="warning-row"><span>Gần hết hàng (1–5)</span><strong th:text="${lowStockCount}">0</strong></div>
+        <div class="danger-row"><span>Hết hàng</span><strong th:text="${outOfStockCount}">0</strong></div>
+      </div>
+      <a class="btn btn-outline block" th:href="@{/quan-tri/san-pham}">Quản lý kho sản phẩm</a>
+    </article>
+  </section>
+
+  <section class="dashboard-section dashboard-two-column">
+    <article class="panel">
+      <div class="section-heading"><div><h2>Top 10 sản phẩm bán chạy</h2><p class="muted">Xếp theo số lượng bán, không tính đơn đã hủy.</p></div></div>
+      <div class="tablewrap">
+        <table class="dashboard-table">
+          <thead><tr><th>Sản phẩm</th><th>Danh mục</th><th>Đã bán</th><th>Doanh thu</th></tr></thead>
+          <tbody>
+            <tr th:each="p : ${topProducts}">
+              <td th:text="${p.name()}">Tên sản phẩm</td><td th:text="${p.category()}">Danh mục</td>
+              <td th:text="${p.quantity()}">0</td>
+              <td th:text="${#numbers.formatInteger(p.revenue(),3,'POINT') + '₫'}">0₫</td>
+            </tr>
+            <tr th:if="${topProducts.isEmpty()}"><td colspan="4">Chưa có dữ liệu bán hàng trong kỳ.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+    <article class="panel">
+      <div class="section-heading"><div><h2>Top 10 khách hàng</h2><p class="muted">Gộp theo email; nếu thiếu email thì dùng số điện thoại.</p></div></div>
+      <div class="tablewrap">
+        <table class="dashboard-table">
+          <thead><tr><th>Khách hàng</th><th>Liên hệ</th><th>Số đơn</th><th>Đã chi tiêu</th></tr></thead>
+          <tbody>
+            <tr th:each="c : ${topCustomers}">
+              <td th:text="${c.name()}">Tên khách</td><td th:text="${c.contact()}">Liên hệ</td>
+              <td th:text="${c.orderCount()}">0</td>
+              <td th:text="${#numbers.formatInteger(c.totalSpent(),3,'POINT') + '₫'}">0₫</td>
+            </tr>
+            <tr th:if="${topCustomers.isEmpty()}"><td colspan="4">Chưa có dữ liệu mua hàng trong kỳ.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+
+  <section class="dashboard-section dashboard-two-column">
+    <article class="panel">
+      <div class="section-heading"><div><h2>Khách hàng & đăng ký</h2><p class="muted">Tổng khách mua hàng được gộp theo email/số điện thoại.</p></div></div>
+      <div class="customer-summary">
+        <div><span>Tổng khách hàng</span><strong th:text="${customerCount}">0</strong></div>
+        <div><span>Khách mới trong tháng đã chọn</span><strong th:text="${newCustomers}">0</strong></div>
+      </div>
+      <p class="note" th:text="'Tài khoản thành viên đã đăng ký: ' + ${customerAccountCount}">Tài khoản thành viên đã đăng ký: 0</p>
+      <a class="btn btn-outline block" th:href="@{/quan-tri/tai-khoan}">Xem tài khoản khách hàng</a>
+    </article>
+    <article class="panel">
+      <div class="section-heading"><div><h2>Sinh nhật trong tháng</h2><p class="muted">Tháng <span th:text="${#temporals.format(filterDate,'MM/yyyy')}">01/2026</span>.</p></div></div>
+      <div class="birthday-list" th:if="${!birthdays.isEmpty()}">
+        <div th:each="b : ${birthdays}">
+          <strong th:text="${b.name()}">Tên khách</strong>
+          <span th:text="${#temporals.format(b.birthDate(),'dd/MM')}">01/01</span>
+          <small th:text="${b.email()}">email</small>
+        </div>
+      </div>
+      <p class="empty-state" th:if="${birthdays.isEmpty()}">Chưa có thành viên có ngày sinh trong tháng này. Ngày sinh là thông tin tùy chọn khi đăng ký.</p>
+    </article>
+  </section>
+
+  <section class="dashboard-section panel">
+    <div class="section-heading"><div><h2>Đơn hàng mới nhất</h2><p class="muted">10 đơn hàng gần đây nhất trên toàn hệ thống.</p></div></div>
+    <div class="tablewrap">
+      <table class="dashboard-table">
+        <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Điện thoại</th><th>Tổng tiền</th><th>Trạng thái</th><th>Chi tiết</th></tr></thead>
+        <tbody>
+          <tr th:each="o : ${orders}">
+            <td th:text="${o.code()}">DH</td><td th:text="${o.customerName()}">Tên</td>
+            <td th:text="${o.phone()}">SĐT</td>
+            <td th:text="${#numbers.formatInteger(o.total(),3,'POINT') + '₫'}">0₫</td>
+            <td><span class="badge" th:text="${o.status()}">Trạng thái</span></td>
+            <td><a class="link" th:href="@{/quan-tri/don-hang/{id}(id=${o.id()})}">Xem chi tiết</a></td>
+          </tr>
+          <tr th:if="${orders.isEmpty()}"><td colspan="6">Chưa có đơn hàng.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

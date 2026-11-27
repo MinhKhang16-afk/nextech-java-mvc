@@ -39,9 +39,13 @@ public class CustomerAccountService {
             throw new IllegalArgumentException("Email đã được đăng ký");
         }
         try {
-            accounts.insert(form.getFullName().trim(), email,
+            accounts.insert(
+                form.getFullName().trim(),
+                email,
                 form.getPhone() == null ? "" : form.getPhone().trim(),
-                encoder.encode(password));
+                form.getBirthDate(),
+                encoder.encode(password)
+            );
         } catch (DuplicateKeyException ex) {
             throw new IllegalArgumentException("Email đã được đăng ký", ex);
         }
