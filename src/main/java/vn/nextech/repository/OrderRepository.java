@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import vn.nextech.model.CheckoutForm;
 import vn.nextech.model.OrderLine;
+import vn.nextech.model.OrderStatusEvent;
 import vn.nextech.model.ShopOrder;
 
 import java.sql.PreparedStatement;
@@ -61,7 +62,7 @@ public class OrderRepository {
         );
     }
 
-    public long insertOrder(long customerId, String code, CheckoutForm f,
+    public long insertOrder(long customerId, Long accountId, String code, CheckoutForm f,
                             long total, String paymentMethod) {
         String paymentStatus;
         if ("COD".equals(paymentMethod)) paymentStatus = "CHUA_THANH_TOAN";
@@ -69,12 +70,12 @@ public class OrderRepository {
         else throw new IllegalArgumentException("Phương thức thanh toán không hợp lệ");
 
         String sql =
-            "INSERT INTO don_hang(ma_don_hang,khach_hang_id,ten_nguoi_nhan,sdt_nguoi_nhan," +
+            "INSERT INTO don_hang(ma_don_hang,khach_hang_id,tai_khoan_id,ten_nguoi_nhan,sdt_nguoi_nhan," +
             "dia_chi_giao_hang,ghi_chu,tam_tinh,phi_giao_hang,tong_tien," +
             "phuong_thuc_thanh_toan,trang_thai,trang_thai_thanh_toan) " +
-            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
         return generated(
-            sql, code, customerId, f.getFullName().trim(), f.getPhone().trim(),
+            sql, code, customerId, accountId, f.getFullName().trim(), f.getPhone().trim(),
             f.getAddress().trim(), f.getNote(), total, 0, total,
             paymentMethod, "CHO_XAC_NHAN", paymentStatus
         );
@@ -95,6 +96,38 @@ public class OrderRepository {
             "WHERE san_pham_id=? AND so_luong_ton>=? AND trang_thai=1",
             amount, productId, amount
         ) == 1;
+    }
+
+    public List<ShopOrder> findByAccount(long accountId) {
+        return jdbc.query(
+            "SELECT * FROM don_hang WHERE tai_khoan_id=? ORDER BY thoi_gian_dat DESC, don_hang_id DESC",
+            ORDER, accountId
+        );
+    }
+
+    public java.util.Optional<ShopOrder> findOwnedByAccount(long orderId, long accountId) {
+        return jdbc.query(
+            "SELECT * FROM don_hang WHERE don_hang_id=? AND tai_khoan_id=?",
+            ORDER, orderId, accountId
+        ).stream().findFirst();
+    }
+
+    public List<OrderStatusEvent> statusHistory(long orderId) {
+        return jdbc.query(
+            "SELECT trang_thai, ghi_chu, changed_at FROM don_hang_lich_su " +
+            "WHERE don_hang_id=? ORDER BY changed_at, lich_su_id",
+            (rs, row) -> new OrderStatusEvent(
+                rs.getString("trang_thai"), rs.getString("ghi_chu"),
+                rs.getTimestamp("changed_at").toLocalDateTime()
+            ), orderId
+        );
+    }
+
+    public void addStatusHistory(long orderId, String status, String note) {
+        jdbc.update(
+            "INSERT INTO don_hang_lich_su(don_hang_id,trang_thai,ghi_chu) VALUES(?,?,?)",
+            orderId, status, note
+        );
     }
 
     public List<ShopOrder> all() {

@@ -11,5 +11,6 @@ public record CustomerAccount(
         String passwordHash,
         boolean active,
         LocalDateTime createdAt,
-        LocalDate birthDate) {
+        LocalDate birthDate,
+        String avatarPath) {
 }

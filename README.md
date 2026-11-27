@@ -185,3 +185,53 @@ docker compose logs --tail=100 web db
 2. Đặt `DB_URL`, `DB_USER`, `DB_PASSWORD`, `APP_ADMIN_USERNAME`, `APP_ADMIN_PASSWORD` cho process Java.
 3. Từ thư mục có `pom.xml`, chạy `mvn spring-boot:run`.
 4. Mở `http://localhost:8080`.
+
+
+## 8. Tính năng tài khoản, theo dõi đơn hàng và Excel (bản nâng cấp)
+
+Trước khi chạy phiên bản có lịch sử mua hàng/avatar, hãy nâng cấp database hiện tại **một lần**. Script chỉ thêm cột/bảng và không xóa đơn hàng hay volume.
+
+1. Sao lưu database hiện tại trước khi chạy migration.
+2. Đảm bảo MySQL đang chạy, rồi chạy từ thư mục gốc repository:
+
+```bash
+mkdir -p /workspaces/nextech-backups
+backup="/workspaces/nextech-backups/nextech_before_customer_self_service_$(date +%Y%m%d_%H%M%S).sql"
+docker compose exec -T db sh -lc 'exec mysqldump --no-tablespaces --single-transaction -uroot -p"$MYSQL_ROOT_PASSWORD" nextech_shop' > "$backup"
+ls -lh "$backup"
+
+docker compose exec -T db sh -lc 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" nextech_shop' < sql/upgrade_customer_self_service.sql
+```
+
+**Lưu ý:** `sql/upgrade_customer_self_service.sql` là migration chạy một lần trên database đang có. Không chạy lặp lại vì các lệnh `ALTER TABLE ADD COLUMN` và `ADD CONSTRAINT` sẽ báo trùng nếu đã nâng cấp thành công.
+
+Sau migration, build lại ứng dụng:
+
+```bash
+docker compose up -d --build web
+docker compose logs --tail=100 web
+```
+
+### Tài khoản khách hàng
+- Đăng nhập tại `/tai-khoan/dang-nhap`; khách đăng nhập rồi đặt hàng sẽ được liên kết đơn với tài khoản.
+- Lịch sử mua hàng: `/tai-khoan/don-hang`.
+- Chi tiết và tiến trình đơn: mở từng đơn trong lịch sử. Tiến trình là lịch sử trạng thái do cửa hàng cập nhật, **không phải GPS trực tiếp của shipper**.
+- Khách mua không đăng nhập vẫn đặt hàng được, nhưng đơn mới sẽ không xuất hiện trong lịch sử tài khoản.
+- Avatar JPEG/PNG tối đa 4 MB, ảnh được xử lý và lưu vào volume `upload_data`.
+
+### Quên mật khẩu qua email
+Chức năng chỉ gửi email khi đã cấu hình SMTP trong `.env`. Ví dụ với Gmail, hãy bật xác minh 2 bước và dùng App Password thay vì mật khẩu đăng nhập Gmail:
+
+```dotenv
+MAIL_ENABLED=true
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-address@gmail.com
+MAIL_PASSWORD=your-gmail-app-password
+MAIL_FROM=your-address@gmail.com
+```
+
+Không commit `.env` và không gửi các giá trị SMTP lên chat. Token đặt lại mật khẩu chỉ lưu dạng SHA-256, hết hạn sau 30 phút và chỉ dùng một lần.
+
+### Xuất Excel
+Admin có thể tải XLSX từ Dashboard (doanh thu), Quản lý đơn hàng, Quản lý khách hàng và Quản lý sản phẩm. Tệp xuất sử dụng bộ lọc tương ứng ở trang đơn hàng/khách hàng và giới hạn tối đa 50.000 dòng cho mỗi lần xuất.

@@ -23,6 +23,7 @@
     <div class="admin-actions">
       <div><h2>Danh sách thành viên</h2><p class="note">Không hiển thị mật khẩu hoặc dữ liệu xác thực.</p></div>
       <span class="badge" th:text="${resultCount + ' kết quả'}">0 kết quả</span>
+      <a class="btn btn-outline" th:href="@{/quan-tri/xuat-excel/khach-hang(q=${q},status=${status})}">Xuất Excel</a>
     </div>
 
     <form class="record-filter" method="get" th:action="@{/quan-tri/tai-khoan}">

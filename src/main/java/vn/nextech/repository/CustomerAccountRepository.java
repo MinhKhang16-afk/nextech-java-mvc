@@ -19,7 +19,7 @@ public class CustomerAccountRepository {
     public Optional<CustomerAccount> findByEmail(String email) {
         List<CustomerAccount> accounts = jdbc.query(
             "SELECT tai_khoan_id, ho_ten, email, so_dien_thoai, mat_khau_hash, " +
-            "trang_thai, created_at, ngay_sinh FROM tai_khoan WHERE email = ? LIMIT 1",
+            "trang_thai, created_at, ngay_sinh, avatar_path FROM tai_khoan WHERE email = ? LIMIT 1",
             (rs, row) -> {
                 Date birthDate = rs.getDate("ngay_sinh");
                 return new CustomerAccount(
@@ -30,12 +30,18 @@ public class CustomerAccountRepository {
                     rs.getString("mat_khau_hash"),
                     rs.getBoolean("trang_thai"),
                     rs.getTimestamp("created_at").toLocalDateTime(),
-                    birthDate == null ? null : birthDate.toLocalDate()
+                    birthDate == null ? null : birthDate.toLocalDate(),
+                    rs.getString("avatar_path")
                 );
             },
             email
         );
         return accounts.stream().findFirst();
+    }
+
+    public int updateAvatar(String email, String avatarPath) {
+        return jdbc.update("UPDATE tai_khoan SET avatar_path=? WHERE email=?",
+            avatarPath, email);
     }
 
     public void insert(String fullName, String email, String phone,

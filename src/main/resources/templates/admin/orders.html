@@ -22,6 +22,7 @@
   <div class="panel">
     <div class="admin-actions">
       <div><h2>Danh sách đơn hàng</h2><p class="note">Tìm theo mã đơn, tên người nhận hoặc số điện thoại.</p></div>
+      <a class="btn btn-outline" th:href="@{/quan-tri/xuat-excel/don-hang(q=${q},status=${status},paymentMethod=${paymentMethod},paymentStatus=${paymentStatus},fromDate=${fromDate},toDate=${toDate})}">Xuất Excel</a>
     </div>
 
     <form class="record-filter order-filter" method="get" th:action="@{/quan-tri/don-hang}">

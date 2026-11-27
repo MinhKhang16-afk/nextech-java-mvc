@@ -35,7 +35,8 @@ public class OrderService {
     @Transactional
     public OrderReceipt place(
             CheckoutForm form,
-            Map<Integer, Integer> cart) {
+            Map<Integer, Integer> cart,
+            Long accountId) {
 
         if (cart == null || cart.isEmpty()) {
             throw new IllegalArgumentException("Giỏ hàng trống");
@@ -105,11 +106,13 @@ public class OrderService {
 
         long order = orders.insertOrder(
             customer,
+            accountId,
             code,
             form,
             total,
             paymentMethod
         );
+        orders.addStatusHistory(order, "CHO_XAC_NHAN", "Đơn hàng đã được tiếp nhận.");
 
         for (CartItem line : snapshot) {
 
@@ -219,5 +222,13 @@ public class OrderService {
         }
 
         orders.updateStatus(orderId, requested);
+        String trackingNote = switch (requested) {
+            case "DA_XAC_NHAN" -> "Cửa hàng đã xác nhận đơn hàng.";
+            case "DANG_GIAO" -> "Đơn hàng đang được vận chuyển đến bạn.";
+            case "HOAN_TAT" -> "Đơn hàng đã được giao hoàn tất.";
+            case "DA_HUY" -> "Đơn hàng đã bị hủy.";
+            default -> "Trạng thái đơn hàng được cập nhật.";
+        };
+        orders.addStatusHistory(orderId, requested, trackingNote);
     }
 }
