@@ -19,9 +19,9 @@ services:
       timeout: 5s
       retries: 25
     # web uses network_mode: "service:db", so DNS must be configured here.
+    # Codespaces host uses Azure-provided DNS; Docker containers must use the same resolver.
     dns:
-      - 1.1.1.1
-      - 8.8.8.8
+      - 168.63.129.16
     networks:
       - appnet
 
