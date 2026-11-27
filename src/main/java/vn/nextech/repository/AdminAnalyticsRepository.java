@@ -145,10 +145,7 @@ public class AdminAnalyticsRepository {
 
     public long newCustomers(LocalDate from, LocalDate to) {
         Long value = jdbc.queryForObject(
-            "SELECT COUNT(*) FROM (" +
-            "SELECT " + CUSTOMER_KEY + " AS customer_key, MIN(created_at) AS first_seen " +
-            "FROM khach_hang GROUP BY customer_key HAVING first_seen >= ? AND first_seen < ?" +
-            ") c",
+            "SELECT COUNT(*) FROM tai_khoan WHERE created_at >= ? AND created_at < ?",
             Long.class, from, to
         );
         return value == null ? 0L : value;
