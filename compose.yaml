@@ -34,7 +34,7 @@ services:
       SHOP_UPLOAD_DIR: /data/uploads
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.1-flash-lite}
-      GEMINI_BASE_URL: ${GEMINI_BASE_URL:-https://generativelanguage.googleapis.com/v1beta}
+      GEMINI_BASE_URL: ${GEMINI_BASE_URL:-https://generativelanguage.googleapis.com}
       PAYMENT_BANK_CODE: ${PAYMENT_BANK_CODE}
       PAYMENT_BANK_ACCOUNT: ${PAYMENT_BANK_ACCOUNT}
       PAYMENT_BANK_ACCOUNT_NAME: ${PAYMENT_BANK_ACCOUNT_NAME}
