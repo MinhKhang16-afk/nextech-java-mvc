@@ -46,10 +46,12 @@ public class SecurityConfig {
             throws Exception {
         return http.authorizeHttpRequests(auth -> auth
                     .requestMatchers("/quan-tri", "/quan-tri/**").hasRole("ADMIN")
-                    .requestMatchers("/tai-khoan").hasRole("CUSTOMER")
+                    .requestMatchers("/tai-khoan/dang-ky", "/tai-khoan/dang-nhap",
+                        "/tai-khoan/quen-mat-khau", "/tai-khoan/dat-lai-mat-khau").permitAll()
+                    .requestMatchers("/tai-khoan", "/tai-khoan/**").hasRole("CUSTOMER")
                     .anyRequest().permitAll())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint((request, response, ex) -> {
-                    boolean customerPage = request.getRequestURI().equals(request.getContextPath() + "/tai-khoan");
+                    boolean customerPage = request.getRequestURI().startsWith(request.getContextPath() + "/tai-khoan");
                     response.sendRedirect(request.getContextPath() +
                         (customerPage ? "/tai-khoan/dang-nhap" : "/dang-nhap"));
                 }))

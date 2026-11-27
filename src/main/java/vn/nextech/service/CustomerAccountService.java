@@ -29,6 +29,10 @@ public class CustomerAccountService {
         return accounts.findByEmail(normalizeEmail(email));
     }
 
+    public int updateAvatar(String email, String avatarPath) {
+        return accounts.updateAvatar(normalizeEmail(email), avatarPath);
+    }
+
     public void register(RegistrationForm form) {
         String email = normalizeEmail(form.getEmail());
         String password = form.getPassword();

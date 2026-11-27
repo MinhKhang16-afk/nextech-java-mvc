@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Lịch sử mua hàng')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<div th:replace="~{fragments :: alerts}"></div>
+<main class="container section">
+  <span class="eyebrow">NEXTECH MEMBER</span>
+  <h1 class="admin-title">Lịch sử mua hàng</h1>
+  <p class="muted">Chỉ hiển thị các đơn hàng được đặt khi bạn đăng nhập tài khoản này.</p>
+  <div class="panel tablewrap">
+    <table>
+      <thead><tr><th>Mã đơn</th><th>Ngày đặt</th><th>Tổng tiền</th><th>Thanh toán</th><th>Trạng thái giao hàng</th><th></th></tr></thead>
+      <tbody>
+        <tr th:each="o : ${orders}">
+          <td th:text="${o.code()}">DH</td>
+          <td th:text="${#temporals.format(o.createdAt(),'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+          <td th:text="${#numbers.formatInteger(o.total(),3,'POINT') + '₫'}">0₫</td>
+          <td th:text="${o.paymentStatus() == 'DA_THANH_TOAN' ? 'Đã thanh toán' : (o.paymentMethod() == 'COD' ? 'COD' : 'Chờ xác nhận')}">COD</td>
+          <td th:text="${o.status() == 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : (o.status() == 'DA_XAC_NHAN' ? 'Đã xác nhận' : (o.status() == 'DANG_GIAO' ? 'Đang giao' : (o.status() == 'HOAN_TAT' ? 'Hoàn tất' : 'Đã hủy')))}">Chờ xác nhận</td>
+          <td><a class="link" th:href="@{/tai-khoan/don-hang/{id}(id=${o.id()})}">Theo dõi / Chi tiết</a></td>
+        </tr>
+        <tr th:if="${orders.isEmpty()}"><td colspan="6">Bạn chưa có đơn hàng gắn với tài khoản này. Hãy đăng nhập trước khi đặt hàng để lưu lịch sử mua hàng.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <a class="btn btn-outline" th:href="@{/tai-khoan}">Quay lại tài khoản</a>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body></html>

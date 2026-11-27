@@ -14,7 +14,13 @@
     <div class="account-links">
       <a th:if="${!customerLoggedIn}" th:href="@{/tai-khoan/dang-nhap}">Đăng nhập</a>
       <a th:if="${!customerLoggedIn}" th:href="@{/tai-khoan/dang-ky}">Đăng ký</a>
-      <a th:if="${customerLoggedIn}" th:href="@{/tai-khoan}">👤 Tài khoản</a>
+      <a th:if="${customerLoggedIn}" class="account-avatar-link" th:href="@{/tai-khoan}">
+        <img th:if="${customerAvatar != null and !#strings.isEmpty(customerAvatar)}"
+             class="nav-avatar" th:src="${'/' + customerAvatar}" alt="Avatar">
+        <span th:unless="${customerAvatar != null and !#strings.isEmpty(customerAvatar)}"
+              class="nav-avatar nav-avatar-fallback" th:text="${customerInitials}">KH</span>
+        <span th:text="${customerName}">Tài khoản</span>
+      </a>
       <form th:if="${customerLoggedIn}" th:action="@{/dang-xuat}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         <button type="submit">Đăng xuất</button>

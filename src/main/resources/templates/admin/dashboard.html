@@ -16,6 +16,7 @@
       <span class="eyebrow">NEXTECH CONTROL CENTER</span>
       <h1 class="admin-title">Tổng quan kinh doanh</h1>
       <p class="muted">Theo dõi doanh thu, đơn hàng, khách hàng và tình trạng kho.</p>
+      <a class="btn btn-outline" th:href="@{/quan-tri/xuat-excel/doanh-thu(period=${period},date=${filterDate},categoryId=${categoryId})}">Xuất báo cáo Excel</a>
     </div>
   </div>
   <div th:replace="~{admin/nav :: adminnav}"></div>

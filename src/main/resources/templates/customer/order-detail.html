@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Theo dõi đơn hàng')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main class="container section">
+  <span class="eyebrow">NEXTECH MEMBER / ĐƠN HÀNG</span>
+  <h1 class="admin-title" th:text="'Theo dõi đơn hàng ' + ${order.code()}">Theo dõi đơn hàng</h1>
+  <div class="panel">
+    <h2>Thông tin giao hàng</h2>
+    <dl class="account-detail">
+      <dt>Người nhận</dt><dd th:text="${order.customerName()}">Khách hàng</dd>
+      <dt>Điện thoại</dt><dd th:text="${order.phone()}">0900000000</dd>
+      <dt>Địa chỉ</dt><dd th:text="${order.address()}">Địa chỉ</dd>
+      <dt>Ngày đặt</dt><dd th:text="${#temporals.format(order.createdAt(),'dd/MM/yyyy HH:mm')}">01/01/2026</dd>
+      <dt>Tổng tiền</dt><dd th:text="${#numbers.formatInteger(order.total(),3,'POINT') + '₫'}">0₫</dd>
+      <dt>Thanh toán</dt><dd th:text="${order.paymentStatus() == 'DA_THANH_TOAN' ? 'Đã thanh toán' : (order.paymentMethod() == 'COD' ? 'Thanh toán khi nhận hàng' : 'Chờ xác nhận chuyển khoản')}">COD</dd>
+    </dl>
+  </div>
+  <div class="panel" style="margin-top:22px">
+    <h2>Lộ trình xử lý đơn hàng</h2>
+    <p class="muted">Trạng thái được cập nhật khi cửa hàng xác nhận và chuyển đơn sang từng bước vận chuyển. Đây là tiến trình theo trạng thái, không phải GPS trực tiếp của shipper.</p>
+    <ol class="order-timeline" th:if="${!history.isEmpty()}">
+      <li th:each="event : ${history}">
+        <strong th:text="${event.status() == 'CHO_XAC_NHAN' ? 'Chờ xác nhận' : (event.status() == 'DA_XAC_NHAN' ? 'Đã xác nhận' : (event.status() == 'DANG_GIAO' ? 'Đang giao' : (event.status() == 'HOAN_TAT' ? 'Đã giao hoàn tất' : 'Đã hủy')))}">Trạng thái</strong>
+        <p th:text="${event.note()}">Cập nhật đơn hàng</p>
+        <small th:text="${#temporals.format(event.changedAt(),'dd/MM/yyyy HH:mm')}">01/01/2026</small>
+      </li>
+    </ol>
+    <div th:if="${history.isEmpty()}" class="note">
+      Đơn hàng này được tạo trước khi chức năng lưu lịch sử trạng thái được bổ sung. Trạng thái hiện tại:
+      <strong th:text="${order.status()}">CHO_XAC_NHAN</strong>
+    </div>
+  </div>
+  <div class="panel tablewrap" style="margin-top:22px">
+    <h2>Sản phẩm trong đơn</h2>
+    <table><thead><tr><th>Sản phẩm</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
+      <tbody><tr th:each="line : ${lines}">
+        <td th:text="${line.productName()}">Tên sản phẩm</td><td th:text="${line.quantity()}">1</td>
+        <td th:text="${#numbers.formatInteger(line.price(),3,'POINT') + '₫'}">0₫</td>
+        <td th:text="${#numbers.formatInteger(line.subtotal(),3,'POINT') + '₫'}">0₫</td>
+      </tr></tbody>
+    </table>
+  </div>
+  <a class="btn btn-outline" th:href="@{/tai-khoan/don-hang}">← Quay lại lịch sử mua hàng</a>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body></html>

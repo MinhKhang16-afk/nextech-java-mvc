@@ -86,7 +86,8 @@ public class CheckoutController {
             BindingResult errors,
             HttpSession session,
             Model model,
-            RedirectAttributes flash) {
+            RedirectAttributes flash,
+            Authentication authentication) {
 
         if (cart.items(session).isEmpty()) {
             return "redirect:/gio-hang";
@@ -125,9 +126,17 @@ public class CheckoutController {
 
         try {
 
+            Long accountId = null;
+            if (authentication != null && authentication.isAuthenticated()
+                    && authentication.getAuthorities().stream()
+                        .anyMatch(a -> "ROLE_CUSTOMER".equals(a.getAuthority()))) {
+                accountId = customers.findByEmail(authentication.getName())
+                    .map(vn.nextech.model.CustomerAccount::id).orElse(null);
+            }
             OrderReceipt receipt = orders.place(
                 form,
-                cart.values(session)
+                cart.values(session),
+                accountId
             );
 
             cart.clear(session);
