@@ -1,0 +1,14 @@
+.record-filter{display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:end;margin:18px 0}
+.record-filter label{display:block;font-size:12px;font-weight:800}
+.record-filter .input{display:block;margin-top:7px}
+.record-filter-actions{display:flex;gap:8px;align-items:center}
+.record-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.record-actions form{margin:0}
+.pagination{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;font-weight:800}
+.pagination a{padding:8px 13px;background:var(--soft);border-radius:8px;color:var(--blue)}
+.pagination span{color:var(--muted)}
+.records-table{min-width:900px}
+.table-subtext{display:block;margin-top:3px;color:var(--muted);font-size:10px}
+.order-filter{grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr auto}
+@media(max-width:1080px){.order-filter{grid-template-columns:repeat(3,minmax(0,1fr))}.record-filter-actions{grid-column:1/-1}}
+@media(max-width:760px){.record-filter,.order-filter{grid-template-columns:1fr}.record-filter-actions{grid-column:auto;flex-wrap:wrap}.admin-actions{align-items:flex-start;gap:10px;flex-direction:column}}

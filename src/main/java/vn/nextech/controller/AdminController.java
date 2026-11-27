@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -111,6 +112,66 @@ public class AdminController {
         m.addAttribute("orders", orders.all().stream().limit(10).toList());
 
         return "admin/dashboard";
+    }
+
+
+    @GetMapping("/don-hang")
+    public String orderList(
+            @RequestParam(name = "q", defaultValue = "") String query,
+            @RequestParam(defaultValue = "all") String status,
+            @RequestParam(defaultValue = "all") String paymentMethod,
+            @RequestParam(defaultValue = "all") String paymentStatus,
+            @RequestParam(required = false)
+                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false)
+                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(defaultValue = "0") int requestedPage,
+            Model m) {
+
+        String q = query.trim();
+        if (q.length() > 100) q = q.substring(0, 100);
+        if (!List.of("all", "CHO_XAC_NHAN", "DA_XAC_NHAN", "DANG_GIAO", "HOAN_TAT", "DA_HUY").contains(status))
+            status = "all";
+        if (!List.of("all", "COD", "CHUYEN_KHOAN").contains(paymentMethod))
+            paymentMethod = "all";
+        if (!List.of("all", "CHUA_THANH_TOAN", "CHO_KIEM_TRA", "DA_THANH_TOAN").contains(paymentStatus))
+            paymentStatus = "all";
+
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            LocalDate swap = fromDate;
+            fromDate = toDate;
+            toDate = swap;
+            m.addAttribute("filterNotice", "Khoảng ngày đã được tự động sắp xếp lại.");
+        }
+
+        LocalDateTime from = fromDate == null ? null : fromDate.atStartOfDay();
+        LocalDateTime to = toDate == null ? null : toDate.plusDays(1).atStartOfDay();
+
+        long total = orders.countAdmin(q, "all".equals(status) ? null : status,
+            "all".equals(paymentMethod) ? null : paymentMethod,
+            "all".equals(paymentStatus) ? null : paymentStatus, from, to);
+        int pageSize = 20;
+        int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
+        int page = Math.min(Math.max(0, requestedPage), totalPages - 1);
+
+        m.addAttribute("q", q);
+        m.addAttribute("status", status);
+        m.addAttribute("paymentMethod", paymentMethod);
+        m.addAttribute("paymentStatus", paymentStatus);
+        m.addAttribute("fromDate", fromDate);
+        m.addAttribute("toDate", toDate);
+        m.addAttribute("orders", orders.searchAdmin(q,
+            "all".equals(status) ? null : status,
+            "all".equals(paymentMethod) ? null : paymentMethod,
+            "all".equals(paymentStatus) ? null : paymentStatus,
+            from, to, pageSize, page * pageSize));
+        m.addAttribute("allOrderCount", orders.countOrders());
+        m.addAttribute("resultCount", total);
+        m.addAttribute("currentPage", page);
+        m.addAttribute("totalPages", totalPages);
+        m.addAttribute("startNumber", total == 0 ? 0 : page * pageSize + 1);
+        m.addAttribute("endNumber", Math.min((page + 1) * pageSize, total));
+        return "admin/orders";
     }
 
     @GetMapping("/don-hang/{id}")
