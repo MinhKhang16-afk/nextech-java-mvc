@@ -18,6 +18,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 25
+    # web uses network_mode: "service:db", so DNS must be configured here.
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     networks:
       - appnet
 
